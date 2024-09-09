@@ -3,7 +3,7 @@ function App() {
 
   return (
     <>
-      <p>VerbiSense</p>
+      <p className="text-sky-500">VerbiSense</p>
     </>
   )
 }
