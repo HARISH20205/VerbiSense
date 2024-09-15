@@ -1,17 +1,24 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Layout from "./pages/Layout";
+import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import Welcome from "./pages/Welcome";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Chat from "./pages/Chat";
+import Account from "./pages/Account";
 
 export default function App() {
-  const router = createBrowserRouter([
-    //TODO(Darani):Update the paths accordingly to the ui and the needs.
-    {
-      path: "/",
-      element: <Layout />,
-    },
-  ]);
   return (
     <>
-      <RouterProvider router={router} />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Welcome />}></Route>
+          <Route path="/signup" element={<Signup />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/chat" element={<Chat />}></Route>
+          <Route path="/account" element={<Account />}></Route>
+
+          <Route path="*" element={<Navigate to="/chat" replace />}></Route>
+        </Routes>
+      </Router>
     </>
   );
 }
