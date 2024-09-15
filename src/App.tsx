@@ -1,11 +1,17 @@
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Layout from "./pages/Layout";
 
-function App() {
-
+export default function App() {
+  const router = createBrowserRouter([
+    //TODO(Darani):Update the paths accordingly to the ui and the needs.
+    {
+      path: "/",
+      element: <Layout />,
+    },
+  ]);
   return (
     <>
-      <p className="text-sky-500">VerbiSense</p>
+      <RouterProvider router={router} />
     </>
-  )
+  );
 }
-
-export default App
