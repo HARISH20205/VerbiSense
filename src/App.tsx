@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import Account from "./pages/Account";
 
+// TODO: Protected Routes.
+
 export default function App() {
   return (
     <>
