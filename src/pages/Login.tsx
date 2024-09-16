@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom"
-import logo from "./assets/iconoir--page.svg"
+import { FileText } from "lucide-react"
 
 function Login() {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-10">
       <div className="flex flex-col items-center gap-3">
-        <img src={logo} className="w-8"></img>
+      <FileText size={40} />
         <p className="text-gray-900 text-2xl font-extrabold">Log in to your account</p>
       </div>
       <div className="flex flex-col">
