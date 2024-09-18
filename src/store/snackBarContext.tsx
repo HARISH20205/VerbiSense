@@ -9,7 +9,6 @@ interface Context {
   };
 }
 
-// Initial state for the auth context
 const initialState: Context = {
   snackBarData: {
     open: false,
