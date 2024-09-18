@@ -30,23 +30,23 @@ const storeReducer = (state: Context, action: any) => {
 };
 
 // Create the context
-export const StoreContext = createContext<any>(null);
+export const SnackBarContext = createContext<any>(null);
 
 export const StoreDispatchContext = createContext<any>(null);
 
-export const useStore = () => useContext(StoreContext);
+export const useStore = () => useContext(SnackBarContext);
 
-export const StoreProvider = ({ children }: any) => {
+export const SnackBarProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(storeReducer, initialState);
 
   return (
-    <StoreContext.Provider value={[state, dispatch]}>
+    <SnackBarContext.Provider value={[state, dispatch]}>
       {children}
       {state.snackBarData.open && (
         <Snackbar {...state.snackBarData.props} open={true}>
           {state.snackBarData.children}
         </Snackbar>
       )}
-    </StoreContext.Provider>
+    </SnackBarContext.Provider>
   );
 };

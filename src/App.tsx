@@ -1,16 +1,21 @@
-import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Welcome from "./pages/Welcome";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import Account from "./pages/Account";
-import { StoreProvider } from "./store/context";
+import { SnackBarProvider } from "./store/snackBarContext";
 
 // TODO: Protected Routes.
 
 export default function App() {
   return (
-    <StoreProvider>
+    <SnackBarProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Welcome />}></Route>
@@ -22,6 +27,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/chat" replace />}></Route>
         </Routes>
       </Router>
-    </StoreProvider>
+    </SnackBarProvider>
   );
 }

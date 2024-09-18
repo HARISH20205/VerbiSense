@@ -1,17 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
 import { useContext } from "react";
-import { StoreContext } from "../store/context";
+import { SnackBarContext } from "../store/snackBarContext";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
 }
 
 function Login() {
-  const [_, dispatch] = useContext(StoreContext);
+  const [_, dispatch] = useContext(SnackBarContext);
+  const navigate = useNavigate();
 
   const handleLogin = () => {
+    //make api call
+    //show snack bar only if login is successful
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
       payload: {
@@ -47,6 +50,8 @@ function Login() {
         },
       },
     });
+    //navigation
+    navigate("/chat");
   };
 
   return (
@@ -60,7 +65,7 @@ function Login() {
       <div className="flex flex-col gap-2 w-full">
         <div className="relative w-full">
           <input
-            className="w-full border-2 py-2 pr-10 pl-3 rounded-md focus:outline-none focus:border-blue-500"
+            className="w-full border-2 py-2 pr-10 pl-3 rounded-md focus:outline-none "
             type="email"
             placeholder="Email address"
           />
@@ -71,7 +76,7 @@ function Login() {
         </div>
         <div className="relative w-full">
           <input
-            className="w-full border-2 py-2 pr-10 pl-3 rounded-md focus:outline-none focus:border-blue-500"
+            className="w-full border-2 py-2 pr-10 pl-3 rounded-md focus:outline-none "
             type="password"
             placeholder="Password"
           />
@@ -82,14 +87,12 @@ function Login() {
         </div>
       </div>
       <div className="w-full">
-        <Link to="/chat">
-          <button
-            onClick={handleLogin}
-            className="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 transition-colors"
-          >
-            Log in
-          </button>
-        </Link>
+        <button
+          onClick={handleLogin}
+          className="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 transition-colors"
+        >
+          Log in
+        </button>
       </div>
       <div>
         <p className="text-gray-600">

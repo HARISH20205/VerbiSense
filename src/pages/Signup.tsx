@@ -1,17 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
 import { useContext } from "react";
-import { StoreContext } from "../store/context";
+import { SnackBarContext } from "../store/snackBarContext";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
 }
 
 function Signup() {
-  const [_, dispatch] = useContext(StoreContext);
+  const [_, dispatch] = useContext(SnackBarContext);
+  const navigate = useNavigate();
 
   const handleSignUp = () => {
+    //
+    //show only if signup successful
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
       payload: {
@@ -47,6 +50,8 @@ function Signup() {
         },
       },
     });
+    //navigate after this
+    navigate("/login");
   };
 
   return (
@@ -60,13 +65,13 @@ function Signup() {
         </div>
         <div className="flex flex-col gap-4 w-full">
           <input
-            className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none focus:bg-blue-100 active:bg-blue-100"
+            className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none"
             type="text"
             placeholder="Full name"
           ></input>
           <div className="relative w-full">
             <input
-              className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none focus:bg-blue-100"
+              className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none "
               type="email"
               placeholder="Email address"
             ></input>
@@ -86,11 +91,12 @@ function Signup() {
               size={20}
             />
           </div>
-          <Link to="/chat" onClick={handleSignUp}>
-            <button className="bg-gray-900 text-white rounded-md w-full py-2 ">
-              Sign Up
-            </button>
-          </Link>
+          <button
+            onClick={handleSignUp}
+            className="bg-gray-900 text-white rounded-md w-full py-2 "
+          >
+            Sign up
+          </button>
         </div>
         <p className="text-gray-600">
           Already have an account?{" "}
