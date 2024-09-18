@@ -4,12 +4,13 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import Account from "./pages/Account";
+import { StoreProvider } from "./store/context";
 
 // TODO: Protected Routes.
 
 export default function App() {
   return (
-    <>
+    <StoreProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Welcome />}></Route>
@@ -21,6 +22,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/chat" replace />}></Route>
         </Routes>
       </Router>
-    </>
+    </StoreProvider>
   );
 }
