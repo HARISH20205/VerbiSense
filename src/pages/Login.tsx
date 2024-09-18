@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
-import { useContext } from "react";
-import { SnackBarContext } from "../store/snackBarContext";
+import { useContext, useRef } from "react";
+import { SnackBarContext } from "../store/SnackBarContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebase";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
@@ -12,9 +14,36 @@ function Login() {
   const [_, dispatch] = useContext(SnackBarContext);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    //make api call
-    //show snack bar only if login is successful
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleLogin = async () => {
+    let msg: string = "";
+    let setColor: string = "";
+
+    const email: string | undefined = emailRef.current?.value;
+    const password: string | undefined = passwordRef.current?.value;
+
+    try {
+      const response = await signInWithEmailAndPassword(
+        auth,
+        email!,
+        password!
+      );
+
+      if (response.user.emailVerified) {
+        msg = "Account Logged in successfully!";
+        setColor = "black";
+        navigate("/chat");
+      } else {
+        msg = "Email not verified.";
+        setColor = "#DC143C";
+      }
+    } catch (e) {
+      msg = "Invalid Email or Password!";
+      setColor = "#DC143C";
+    }
+
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
       payload: {
@@ -31,9 +60,9 @@ function Login() {
             }
             severity="success"
             variant="filled"
-            sx={{ width: "100%", backgroundColor: "black", color: "white" }}
+            sx={{ width: "100%", backgroundColor: setColor, color: "white" }}
           >
-            Account logged in successfully!
+            {msg}
           </Alert>
         ),
         props: {
@@ -50,8 +79,6 @@ function Login() {
         },
       },
     });
-    //navigation
-    navigate("/chat");
   };
 
   return (
@@ -67,6 +94,7 @@ function Login() {
           <input
             className="w-full border-2 py-2 pr-10 pl-3 rounded-md focus:outline-none "
             type="email"
+            ref={emailRef}
             placeholder="Email address"
           />
           <Mail
@@ -78,6 +106,7 @@ function Login() {
           <input
             className="w-full border-2 py-2 pr-10 pl-3 rounded-md focus:outline-none "
             type="password"
+            ref={passwordRef}
             placeholder="Password"
           />
           <Eye
