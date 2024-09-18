@@ -38,7 +38,7 @@ function Account() {
           </div>
           <div>
             <div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mb-3">
                 <Lock />
                 <p className="text-lg font-medium">Change Password</p>
               </div>
