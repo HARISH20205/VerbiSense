@@ -4,8 +4,6 @@ import { LogIn } from "lucide-react";
 import { UserPlus } from "lucide-react";
 
 function Welcome() {
-  const api = import.meta.env.API_KEY;
-  console.log(api);
   return (
     <div className="flex items-center justify-center flex-col max-md:w-[70%] md:w-[30%] mx-auto h-screen gap-4">
       <div className="flex flex-col items-center">

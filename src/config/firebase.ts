@@ -6,7 +6,7 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.API_KEY,
+  apiKey: import.meta.env.VITE_API_KEY,
   authDomain: "verbisense.firebaseapp.com",
   projectId: "verbisense",
   storageBucket: "verbisense.appspot.com",
