@@ -1,17 +1,70 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
-import { useContext } from "react";
-import { StoreContext } from "../store/context";
+import { useContext, useRef } from "react";
+import { SnackBarContext } from "../store/SnackBarContext";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  User,
+  UserCredential,
+} from "firebase/auth";
+import { auth, db } from "../config/firebase";
+import { emailRegex } from "../constants/regex";
+import { doc, setDoc } from "firebase/firestore";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
 }
 
 function Signup() {
-  const [_, dispatch] = useContext(StoreContext);
+  const [_, dispatch] = useContext(SnackBarContext);
+  const navigate = useNavigate();
 
-  const handleSignUp = () => {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const userNameRef = useRef<HTMLInputElement>(null);
+
+  const handleSignUp = async () => {
+    const email: string | undefined = emailRef.current?.value;
+    const password: string | undefined = passwordRef.current?.value;
+
+    const isValidEmail = emailRegex.test(email!);
+    const isValidPassword = password!.length > 5;
+
+    let msg: string = "";
+    let setColor: string = "";
+
+    if (userNameRef.current?.value.trim().length === 0) {
+      msg = "Please Enter your username";
+      setColor = "#B22222";
+    } else if (!isValidEmail) {
+      msg = "Invaild Email";
+      setColor = "#B22222";
+    } else if (!isValidPassword) {
+      msg = "Password must be at least 6 characters!";
+      setColor = "#B22222";
+    } else {
+      try {
+        const userCredentials: UserCredential =
+          await createUserWithEmailAndPassword(auth, email!, password!);
+        const user: User = userCredentials.user;
+        await sendEmailVerification(user);
+        msg = "Check your email for verification.";
+        setColor = "black";
+
+        await setDoc(doc(db, "users", user.uid), {
+          email: email,
+          username: userNameRef.current!.value,
+        });
+
+        navigate("/login");
+      } catch (e) {
+        msg = "Email Already Exists.";
+        setColor = "#B22222";
+      }
+    }
+
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
       payload: {
@@ -28,9 +81,13 @@ function Signup() {
             }
             severity="success"
             variant="filled"
-            sx={{ width: "100%", backgroundColor: "black", color: "white" }}
+            sx={{
+              width: "100%",
+              backgroundColor: setColor,
+              color: "white",
+            }}
           >
-            Account created successfully!
+            {msg}
           </Alert>
         ),
         props: {
@@ -47,6 +104,7 @@ function Signup() {
         },
       },
     });
+    //navigate after this
   };
 
   return (
@@ -60,14 +118,16 @@ function Signup() {
         </div>
         <div className="flex flex-col gap-4 w-full">
           <input
-            className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none focus:bg-blue-100 active:bg-blue-100"
+            className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none"
             type="text"
+            ref={userNameRef}
             placeholder="Full name"
           ></input>
           <div className="relative w-full">
             <input
-              className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none focus:bg-blue-100"
+              className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none "
               type="email"
+              ref={emailRef}
               placeholder="Email address"
             ></input>
             <Mail
@@ -79,6 +139,7 @@ function Signup() {
             <input
               className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none"
               type="password"
+              ref={passwordRef}
               placeholder="Password"
             ></input>
             <Eye
@@ -86,11 +147,12 @@ function Signup() {
               size={20}
             />
           </div>
-          <Link to="/chat" onClick={handleSignUp}>
-            <button className="bg-gray-900 text-white rounded-md w-full py-2 ">
-              Sign Up
-            </button>
-          </Link>
+          <button
+            onClick={handleSignUp}
+            className="bg-gray-900 text-white rounded-md w-full py-2 "
+          >
+            Sign up
+          </button>
         </div>
         <p className="text-gray-600">
           Already have an account?{" "}
