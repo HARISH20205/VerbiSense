@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, FileText, Mail } from "lucide-react";
+import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { SnackBarContext } from "../store/SnackBarContext";
 import {
   createUserWithEmailAndPassword,
@@ -18,6 +18,8 @@ function SlideTransition(props: SlideProps) {
 }
 
 function Signup() {
+  const [eyeState, setEyeState] = useState<boolean>(false);
+
   const [_, dispatch] = useContext(SnackBarContext);
   const navigate = useNavigate();
 
@@ -138,14 +140,23 @@ function Signup() {
           <div className="relative w-full">
             <input
               className="border-2 border-gray-300 rounded-md w-full py-2 pr-10 pl-3 focus:outline-none"
-              type="password"
+              type={eyeState ? "text" : "password"}
               ref={passwordRef}
               placeholder="Password"
             ></input>
-            <Eye
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+            {eyeState ? (
+              <Eye
+                onClick={() => setEyeState(!eyeState)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={20}
+              />
+            ) : (
+              <EyeOff
+                onClick={() => setEyeState(!eyeState)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={20}
+              />
+            )}
           </div>
           <button
             onClick={handleSignUp}
