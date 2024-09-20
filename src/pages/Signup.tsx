@@ -3,15 +3,9 @@ import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { SnackBarContext } from "../store/SnackBarContext";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  User,
-  UserCredential,
-} from "firebase/auth";
-import { auth, db } from "../config/firebase";
 import { emailRegex } from "../constants/regex";
-import { doc, setDoc } from "firebase/firestore";
+import { signup } from "../services/auth/authService";
+import { themeColors } from "../resources/colors";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
@@ -39,7 +33,7 @@ function Signup() {
 
     if (userNameRef.current?.value.trim().length === 0) {
       msg = "Please Enter your username";
-      setColor = "#B22222";
+      setColor = themeColors.primary;
     } else if (!isValidEmail) {
       msg = "Invaild Email";
       setColor = "#B22222";
@@ -47,21 +41,16 @@ function Signup() {
       msg = "Password must be at least 6 characters!";
       setColor = "#B22222";
     } else {
-      try {
-        const userCredentials: UserCredential =
-          await createUserWithEmailAndPassword(auth, email!, password!);
-        const user: User = userCredentials.user;
-        await sendEmailVerification(user);
+      const response = await signup(
+        userNameRef.current!.value,
+        email!,
+        password!
+      );
+      if (response != null) {
         msg = "Check your email for verification.";
         setColor = "black";
-
-        await setDoc(doc(db, "users", user.uid), {
-          email: email,
-          username: userNameRef.current!.value,
-        });
-
         navigate("/login");
-      } catch (e) {
+      } else {
         msg = "Email Already Exists.";
         setColor = "#B22222";
       }
@@ -106,7 +95,6 @@ function Signup() {
         },
       },
     });
-    //navigate after this
   };
 
   return (
@@ -147,13 +135,13 @@ function Signup() {
             {eyeState ? (
               <Eye
                 onClick={() => setEyeState(!eyeState)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                 size={20}
               />
             ) : (
               <EyeOff
                 onClick={() => setEyeState(!eyeState)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                 size={20}
               />
             )}

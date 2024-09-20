@@ -3,8 +3,8 @@ import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { Alert, Slide, SlideProps } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { SnackBarContext } from "../store/SnackBarContext";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { login } from "../services/auth/authService";
+import { UserCredential } from "firebase/auth";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
@@ -26,13 +26,9 @@ function Login() {
     const email: string | undefined = emailRef.current?.value;
     const password: string | undefined = passwordRef.current?.value;
 
-    try {
-      const response = await signInWithEmailAndPassword(
-        auth,
-        email!,
-        password!
-      );
+    const response: UserCredential | null = await login(email!, password!);
 
+    if (response) {
       if (response.user.emailVerified) {
         msg = "Account Logged in successfully!";
         setColor = "black";
@@ -41,7 +37,7 @@ function Login() {
         msg = "Email not verified.";
         setColor = "#DC143C";
       }
-    } catch (e) {
+    } else {
       msg = "Invalid Email or Password!";
       setColor = "#DC143C";
     }
@@ -114,13 +110,13 @@ function Login() {
           {eyeState ? (
             <Eye
               onClick={() => setEyeState(!eyeState)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
               size={20}
             />
           ) : (
             <EyeOff
               onClick={() => setEyeState(!eyeState)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
               size={20}
             />
           )}
