@@ -13,7 +13,7 @@ export default function AuthRedirect({ element }: authRedireactProps) {
     return <div>Loading...</div>;
   }
 
-  if (user) {
+  if (user && user.emailVerified) {
     return <Navigate to="/chat" />;
   }
 
