@@ -13,6 +13,7 @@ function SlideTransition(props: SlideProps) {
 
 function Login() {
   const [eyeState, setEyeState] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [_, dispatch] = useContext(SnackBarContext);
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function Login() {
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     let msg: string = "";
     let setColor: string = "";
 
@@ -42,6 +44,8 @@ function Login() {
       msg = "Invalid Email or Password!";
       setColor = themeColors.errorColor;
     }
+
+    setIsLoading(false);
 
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
@@ -125,10 +129,11 @@ function Login() {
       </div>
       <div className="w-full">
         <button
+          disabled={isLoading}
           onClick={handleLogin}
           className="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 transition-colors"
         >
-          Log in
+          {isLoading ? "Loading..." : "Log in"}
         </button>
       </div>
       <div>
