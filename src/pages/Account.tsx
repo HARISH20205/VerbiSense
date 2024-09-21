@@ -27,6 +27,10 @@ function Account() {
     }
   }, [authUser]);
 
+  async function hanldeSaveChanges() {
+    //do the changes here
+  }
+
   return (
     <div>
       <div className="flex justify-between p-5">
@@ -136,7 +140,10 @@ function Account() {
           </div>
           <hr className="" />
           <div className="flex max-xs:flex-col justify-between py-3 w-full">
-            <button className="bg-gray-900 max-xs:w-full text-white flex gap-3 justify-center items-center max-md:text-sm max-md:w-[55%] md:w-[50%] py-2 mb-5 rounded-md">
+            <button
+              onClick={hanldeSaveChanges}
+              className="bg-gray-900 max-xs:w-full text-white flex gap-3 justify-center items-center max-md:text-sm max-md:w-[55%] md:w-[50%] py-2 mb-5 rounded-md"
+            >
               <Save />
               Save Changes
             </button>
