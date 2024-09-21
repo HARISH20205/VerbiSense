@@ -12,7 +12,7 @@ export default function AuthRedirect({ element }: authRedireactProps) {
 
   if (isLoading) {
     return (
-      <div>
+      <div className="flex items-center justify-center h-screen">
         <CircularProgress
           color="inherit"
           size={50}
