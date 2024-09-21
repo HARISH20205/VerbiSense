@@ -5,6 +5,7 @@ import { useContext, useRef, useState } from "react";
 import { SnackBarContext } from "../store/SnackBarContext";
 import { login } from "../services/auth/authService";
 import { UserCredential } from "firebase/auth";
+import { themeColors } from "../resources/colors";
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="up" />;
@@ -31,15 +32,15 @@ function Login() {
     if (response) {
       if (response.user.emailVerified) {
         msg = "Account Logged in successfully!";
-        setColor = "black";
+        setColor = themeColors.primary;
         navigate("/chat");
       } else {
         msg = "Email not verified.";
-        setColor = "#DC143C";
+        setColor = themeColors.errorColor;
       }
     } else {
       msg = "Invalid Email or Password!";
-      setColor = "#DC143C";
+      setColor = themeColors.errorColor;
     }
 
     dispatch({

@@ -8,10 +8,21 @@ import {
   Save,
   User,
 } from "lucide-react";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../store/AuthContext";
-import { logout } from "../services/auth/authService";
+import {
+  changePassword,
+  logout,
+  updateName,
+} from "../services/auth/authService";
+import { Alert, Slide, SlideProps } from "@mui/material";
+import { SnackBarContext } from "../store/SnackBarContext";
+import { themeColors } from "../resources/colors";
+
+function SlideTransition(props: SlideProps) {
+  return <Slide {...props} direction="up" />;
+}
 
 function Account() {
   const [currentEyeState, setCurrentEyeState] = useState<boolean>(false);
@@ -19,7 +30,11 @@ function Account() {
   const [userName, setUserName] = useState<string>("");
   const [isNameEdit, setIsNameEdit] = useState<boolean>(false);
 
+  const currentPasswordRef = useRef<HTMLInputElement>(null);
+  const newPasswordRef = useRef<HTMLInputElement>(null);
+
   const { authUser } = useContext(AuthContext);
+  const [_, dispatch] = useContext(SnackBarContext);
 
   useEffect(() => {
     if (authUser) {
@@ -28,7 +43,104 @@ function Account() {
   }, [authUser]);
 
   async function hanldeSaveChanges() {
-    //do the changes here
+    let msg: string = "";
+    let setColor: string = "";
+
+    const currentPassword = currentPasswordRef.current?.value;
+    const newPassword = newPasswordRef.current?.value;
+
+    if (
+      currentPassword &&
+      newPassword &&
+      authUser?.userName !== userName.trim()
+    ) {
+      if (currentPassword.trim().length > 0 && newPassword.trim().length > 0) {
+        const passwordResponse = await changePassword(
+          authUser!.email,
+          currentPassword,
+          newPassword
+        );
+        const userNameResponse = await updateName(userName);
+
+        if (typeof passwordResponse === "string" && userNameResponse == false) {
+          msg = passwordResponse;
+          setColor = themeColors.errorColor;
+        } else {
+          msg = "Username and Password Saved Successfully!";
+          setColor = themeColors.primary;
+        }
+        authUser!.userName = userName;
+        currentPasswordRef.current.value = "";
+        newPasswordRef.current.value = "";
+      }
+    } else if (authUser?.userName !== userName.trim()) {
+      const response = await updateName(userName);
+      if (response) {
+        msg = "Username Saved Successfully!";
+        setColor = themeColors.primary;
+        authUser!.userName = userName;
+      }
+    } else if (currentPassword && newPassword) {
+      if (currentPassword.trim().length > 0 && newPassword.trim().length > 0) {
+        const passwordResponse = await changePassword(
+          authUser!.email,
+          currentPassword,
+          newPassword
+        );
+        if (typeof passwordResponse === "string") {
+          msg = passwordResponse;
+          setColor = themeColors.errorColor;
+        } else {
+          msg = "Password Saved Successfully!";
+          setColor = themeColors.primary;
+        }
+        currentPasswordRef.current.value = "";
+        newPasswordRef.current.value = "";
+      }
+    } else {
+      msg = "No changes found!";
+      setColor = themeColors.primary;
+    }
+
+    dispatch({
+      type: "TOGGLE_SNACKBAR_DATA",
+      payload: {
+        open: true,
+        children: (
+          <Alert
+            onClose={() =>
+              dispatch({
+                type: "TOGGLE_SNACKBAR_DATA",
+                payload: {
+                  open: false,
+                },
+              })
+            }
+            severity="success"
+            variant="filled"
+            sx={{
+              width: "100%",
+              backgroundColor: setColor,
+              color: "white",
+            }}
+          >
+            {msg}
+          </Alert>
+        ),
+        props: {
+          anchorOrigin: { vertical: "bottom", horizontal: "right" },
+          autoHideDuration: 3000,
+          onClose: () =>
+            dispatch({
+              type: "TOGGLE_SNACKBAR_DATA",
+              payload: {
+                open: false,
+              },
+            }),
+          TransitionComponent: SlideTransition,
+        },
+      },
+    });
   }
 
   return (
@@ -100,6 +212,7 @@ function Account() {
                   <input
                     className="border-2 border-gray-300 rounded-md w-full py-1 pr-10 pl-3 focus:outline-none"
                     type={currentEyeState ? "text" : "password"}
+                    ref={currentPasswordRef}
                   ></input>
                   {currentEyeState ? (
                     <Eye
@@ -118,6 +231,7 @@ function Account() {
                 <div className="relative">
                   <p className="mb-2 font-medium">New Password</p>
                   <input
+                    ref={newPasswordRef}
                     className="border-2 border-gray-300 rounded-md w-full py-1 pr-10 pl-3 focus:outline-none"
                     type={newEyeState ? "text" : "password"}
                   ></input>
