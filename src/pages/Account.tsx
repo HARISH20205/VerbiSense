@@ -29,6 +29,7 @@ function Account() {
   const [newEyeState, setNewEyeState] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>("");
   const [isNameEdit, setIsNameEdit] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const currentPasswordRef = useRef<HTMLInputElement>(null);
   const newPasswordRef = useRef<HTMLInputElement>(null);
@@ -43,6 +44,7 @@ function Account() {
   }, [authUser]);
 
   async function hanldeSaveChanges() {
+    setIsLoading(true);
     let msg: string = "";
     let setColor: string = "";
 
@@ -55,23 +57,31 @@ function Account() {
       authUser?.userName !== userName.trim()
     ) {
       if (currentPassword.trim().length > 0 && newPassword.trim().length > 0) {
-        const passwordResponse = await changePassword(
-          authUser!.email,
-          currentPassword,
-          newPassword
-        );
-        const userNameResponse = await updateName(userName);
+        if (newPassword.trim().length > 5) {
+          const passwordResponse = await changePassword(
+            authUser!.email,
+            currentPassword,
+            newPassword
+          );
+          const userNameResponse = await updateName(userName);
 
-        if (typeof passwordResponse === "string" && userNameResponse == false) {
-          msg = passwordResponse;
-          setColor = themeColors.errorColor;
+          if (
+            typeof passwordResponse === "string" &&
+            userNameResponse == false
+          ) {
+            msg = passwordResponse;
+            setColor = themeColors.errorColor;
+          } else {
+            msg = "Username and Password Saved Successfully!";
+            setColor = themeColors.primary;
+          }
+          authUser!.userName = userName;
+          currentPasswordRef.current.value = "";
+          newPasswordRef.current.value = "";
         } else {
-          msg = "Username and Password Saved Successfully!";
+          msg = "New Password must be greater than 5";
           setColor = themeColors.primary;
         }
-        authUser!.userName = userName;
-        currentPasswordRef.current.value = "";
-        newPasswordRef.current.value = "";
       }
     } else if (authUser?.userName !== userName.trim()) {
       const response = await updateName(userName);
@@ -82,25 +92,32 @@ function Account() {
       }
     } else if (currentPassword && newPassword) {
       if (currentPassword.trim().length > 0 && newPassword.trim().length > 0) {
-        const passwordResponse = await changePassword(
-          authUser!.email,
-          currentPassword,
-          newPassword
-        );
-        if (typeof passwordResponse === "string") {
-          msg = passwordResponse;
-          setColor = themeColors.errorColor;
+        if (newPassword.trim().length > 5) {
+          const passwordResponse = await changePassword(
+            authUser!.email,
+            currentPassword,
+            newPassword
+          );
+          if (typeof passwordResponse === "string") {
+            msg = passwordResponse;
+            setColor = themeColors.errorColor;
+          } else {
+            msg = "Password Saved Successfully!";
+            setColor = themeColors.primary;
+          }
+          currentPasswordRef.current.value = "";
+          newPasswordRef.current.value = "";
         } else {
-          msg = "Password Saved Successfully!";
-          setColor = themeColors.primary;
+          msg = "New Password must be greater than 5";
+          setColor = themeColors.errorColor;
         }
-        currentPasswordRef.current.value = "";
-        newPasswordRef.current.value = "";
       }
     } else {
       msg = "No changes found!";
       setColor = themeColors.primary;
     }
+
+    setIsLoading(false);
 
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
@@ -255,11 +272,12 @@ function Account() {
           <hr className="" />
           <div className="flex max-xs:flex-col justify-between py-3 w-full">
             <button
+              disabled={isLoading}
               onClick={hanldeSaveChanges}
               className="bg-gray-900 max-xs:w-full text-white flex gap-3 justify-center items-center max-md:text-sm max-md:w-[55%] md:w-[50%] py-2 mb-5 rounded-md"
             >
               <Save />
-              Save Changes
+              {isLoading ? "Loading..." : "Save Changes"}
             </button>
             <button
               onClick={logout}

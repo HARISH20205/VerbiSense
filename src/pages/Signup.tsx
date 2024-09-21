@@ -13,6 +13,7 @@ function SlideTransition(props: SlideProps) {
 
 function Signup() {
   const [eyeState, setEyeState] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [_, dispatch] = useContext(SnackBarContext);
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ function Signup() {
   const userNameRef = useRef<HTMLInputElement>(null);
 
   const handleSignUp = async () => {
+    setIsLoading(true);
+
     const email: string | undefined = emailRef.current?.value;
     const password: string | undefined = passwordRef.current?.value;
 
@@ -55,6 +58,8 @@ function Signup() {
         setColor = themeColors.errorColor;
       }
     }
+
+    setIsLoading(false);
 
     dispatch({
       type: "TOGGLE_SNACKBAR_DATA",
@@ -147,10 +152,11 @@ function Signup() {
             )}
           </div>
           <button
+            disabled={isLoading}
             onClick={handleSignUp}
             className="bg-gray-900 text-white rounded-md w-full py-2 "
           >
-            Sign up
+            {isLoading ? "Loading..." : "Sign up"}
           </button>
         </div>
         <p className="text-gray-600">
