@@ -1,18 +1,60 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../config/firebase";
 import { AuthUserModel } from "../../models/auth/AuthUserModel";
 import {
+  AuthCredential,
+  EmailAuthProvider,
+  User,
   UserCredential,
   createUserWithEmailAndPassword,
+  reauthenticateWithCredential,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
 } from "firebase/auth";
 
 export async function logout() {
   try {
     await signOut(auth);
   } catch (e) {}
+}
+
+export async function changePassword(
+  email: string,
+  oldPassword: string,
+  newPassword: string
+): Promise<User | string> {
+  const user = auth.currentUser;
+  if (!user) {
+    return "User not Authenticated";
+  }
+  const credential: AuthCredential = EmailAuthProvider.credential(
+    email,
+    oldPassword
+  );
+  try {
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPassword);
+    return user;
+  } catch (e) {
+    return "Incorrect current password";
+  }
+}
+
+export async function updateName(userName: string): Promise<boolean> {
+  const user = auth.currentUser;
+  if (!user) {
+    return false;
+  }
+  try {
+    await updateDoc(doc(db, "users", user.uid), {
+      userName: userName,
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 export async function login(

@@ -33,13 +33,13 @@ function Signup() {
 
     if (userNameRef.current?.value.trim().length === 0) {
       msg = "Please Enter your username";
-      setColor = themeColors.primary;
+      setColor = themeColors.errorColor;
     } else if (!isValidEmail) {
       msg = "Invaild Email";
-      setColor = "#B22222";
+      setColor = themeColors.errorColor;
     } else if (!isValidPassword) {
       msg = "Password must be at least 6 characters!";
-      setColor = "#B22222";
+      setColor = themeColors.errorColor;
     } else {
       const response = await signup(
         userNameRef.current!.value,
@@ -48,11 +48,11 @@ function Signup() {
       );
       if (response != null) {
         msg = "Check your email for verification.";
-        setColor = "black";
+        setColor = themeColors.primary;
         navigate("/login");
       } else {
         msg = "Email Already Exists.";
-        setColor = "#B22222";
+        setColor = themeColors.errorColor;
       }
     }
 
