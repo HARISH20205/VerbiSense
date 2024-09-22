@@ -10,7 +10,7 @@ export default function SideBar() {
   ];
 
   return (
-    <div className="flex flex-col justify-between h-screen bg-[#F3F4F6] p-4 md:w-[30%] max-md:w-[40%] max-xs:hidden overflow-auto">
+    <div className="flex flex-col justify-between h-screen bg-[#F3F4F6] p-4 md:w-[35%] max-md:w-[40%] max-mdx:hidden overflow-auto max-md:text-sm max-lg:text-sm">
       <div className="flex flex-col gap-7">
         <div className="flex gap-2 font-bold text-lg text-gray-900">
           <FileText />

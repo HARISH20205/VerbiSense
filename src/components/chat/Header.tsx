@@ -10,9 +10,18 @@ export default function Header() {
     setOpen(!open);
   };
 
+  const handleClose = () => {
+    if (open) {
+      setOpen(false);
+    }
+  };
+
   return (
-    <div className="flex justify-between w-full p-5 border-b-2 border-gray h-full">
-      <div className="xs:hidden cursor-pointer">
+    <div
+      onClick={handleClose}
+      className="flex justify-between w-full p-5 border-b-2 border-gray h-full"
+    >
+      <div className="mdx:hidden cursor-pointer">
         <Menu />
       </div>
       <div>
