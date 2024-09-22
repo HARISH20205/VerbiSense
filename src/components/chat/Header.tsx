@@ -3,7 +3,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { logout } from "../../services/auth/authService";
 
-export default function Header() {
+interface HeaderProps {
+  showDrawer: () => void;
+}
+
+export default function Header({ showDrawer }: HeaderProps) {
   const [open, setOpen] = useState<HTMLElement | boolean>(false);
 
   const handleClick = () => {
@@ -19,13 +23,13 @@ export default function Header() {
   return (
     <div
       onClick={handleClose}
-      className="flex justify-between w-full p-5 border-b-2 border-gray h-full"
+      className="flex justify-between p-5 border-b-2 border-gray sticky top-0 z-10 bg-white"
     >
       <div className="mdx:hidden cursor-pointer">
-        <Menu />
+        <Menu onClick={showDrawer} />
       </div>
       <div>
-        <p>Question Answering</p>
+        <p className="font-semibold text-lg">Question Answering</p>
       </div>
       <div>
         <Settings onClick={handleClick} className="cursor-pointer static" />

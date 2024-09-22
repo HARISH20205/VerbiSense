@@ -7,3 +7,9 @@ export function getFilenameFromUrl(url: string) {
   )[2];
   return filename;
 }
+export const truncateFilename = (filename: string, maxLength: number = 35) => {
+  if (filename.length > maxLength) {
+    return filename.substring(0, maxLength - 3) + '...';
+  }
+  return filename;
+};

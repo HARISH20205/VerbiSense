@@ -1,17 +1,22 @@
-import { Eye, FileText, Trash2, Upload } from "lucide-react";
+import { Eye, FileText, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState, ChangeEvent, useContext, useEffect } from "react";
 import { SnackBarContext } from "../../store/SnackBarContext";
 import { themeColors } from "../../resources/colors";
 import { deleteFile, uploadFile } from "../../services/chat/chatService";
-import { getFilenameFromUrl } from "../../utils/helper";
+import { getFilenameFromUrl, truncateFilename } from "../../utils/helper";
 import { showSnackBar } from "../../utils/snackbar";
 
 interface SideBarProps {
   userFiles: string[] | null;
-  isLoding: boolean;
+  isLoading: boolean;
+  closeDrawer: () => void;
 }
 
-export default function SideBar({ userFiles, isLoding }: SideBarProps) {
+export default function SideBar({
+  userFiles,
+  isLoading,
+  closeDrawer,
+}: SideBarProps) {
   const [files, setFiles] = useState<string[] | null>(userFiles);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false);
@@ -103,11 +108,16 @@ export default function SideBar({ userFiles, isLoding }: SideBarProps) {
   };
 
   return (
-    <div className="flex flex-col justify-between h-screen bg-[#F3F4F6] p-4 md:w-[35%] max-md:w-[40%] max-mdx:hidden overflow-auto max-md:text-sm max-lg:text-sm">
+    <div
+      className={`flex  flex-col z-30 justify-between h-screen bg-[#F3F4F6] p-4 overflow-auto max-md:text-sm max-lg:text-sm`}
+    >
       <div className="flex flex-col gap-7">
-        <div className="flex gap-2 font-bold text-lg text-gray-900">
-          <FileText />
-          <p>QA App</p>
+        <div className="flex gap-2 items-center justify-between font-bold text-lg text-gray-900">
+          <div className="flex gap-2">
+            <FileText />
+            <p>VerbiSense</p>
+          </div>
+          <X className="mdx:hidden" onClick={closeDrawer} />
         </div>
         <div className="flex flex-col gap-5 p-2">
           <div className="flex gap-2">
@@ -128,7 +138,7 @@ export default function SideBar({ userFiles, isLoding }: SideBarProps) {
             />
           </div>
           <div
-            className={`border-dashed border-2 p-4 ${
+            className={`border-dashed border-2 p-4 max-mdx:hidden ${
               dragging ? "border-black" : "border-gray-300"
             } transition-all`}
             onDrop={handleDrop}
@@ -150,14 +160,14 @@ export default function SideBar({ userFiles, isLoding }: SideBarProps) {
               Uploaded Documents<span className="text-sm">(Max.3MB)</span>
             </p>
           </div>
-          {isLoding && <p>Loading...</p>}
+          {isLoading && <p>Loading...</p>}
           {files && files.length > 0 ? (
             files.map((doc, key) => (
               <div
                 key={key}
-                className="flex items-center text-gray-600 w-full bg-white p-2 rounded-sm justify-between"
+                className="flex items-center text-gray-600 bg-white p-2 rounded-sm justify-between"
               >
-                <p className="truncate">{getFilenameFromUrl(doc)}</p>
+                <p>{truncateFilename(getFilenameFromUrl(doc))}</p>
                 <div className="flex gap-2">
                   <Eye
                     onClick={() => handleViewFile(doc)}

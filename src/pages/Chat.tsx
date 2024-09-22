@@ -2,11 +2,16 @@ import SideBar from "../components/chat/SideBar";
 import Header from "../components/chat/Header";
 import { useEffect, useState } from "react";
 import { getFiles } from "../services/chat/chatService";
+import Question from "../components/chat/Question";
+import ChatBox from "../components/chat/ChatBox";
 
 function Chat() {
   const [uploadedFiles, setUploadedFiles] = useState<string[] | null>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showDrawer, setShowDrawer] = useState<boolean>(false);
+
   useEffect(() => {
+    console.log(window.innerWidth);
     async function getUploadedFiles() {
       const response = await getFiles();
       if (response) {
@@ -19,11 +24,42 @@ function Chat() {
     setIsLoading(false);
   }, []);
 
+  function openDrawer() {
+    setShowDrawer(true);
+  }
+
+  function closeDrawer() {
+    setShowDrawer(false);
+  }
+
   return (
     <div>
-      <div className="flex">
-        <SideBar isLoding={isLoading} userFiles={uploadedFiles} />
-        <Header />
+      <div
+        className={`mdx:hidden fixed z-20 w-full h-full bg-[rgba(255,255,255,0.7)] transform transition-transform duration-300 ease-in-out ${
+          showDrawer ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="w-[80%]">
+          <SideBar
+            closeDrawer={closeDrawer}
+            isLoading={isLoading}
+            userFiles={uploadedFiles}
+          />
+        </div>
+      </div>
+      <div className="flex h-screen">
+        <div className="max-mdx:hidden w-[35%]">
+          <SideBar
+            closeDrawer={closeDrawer}
+            isLoading={isLoading}
+            userFiles={uploadedFiles}
+          />
+        </div>
+        <div className="flex flex-col justify-between w-full">
+          <Header showDrawer={openDrawer} />
+          <ChatBox />
+          <Question />
+        </div>
       </div>
     </div>
   );
