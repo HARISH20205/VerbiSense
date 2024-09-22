@@ -1,15 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, FileText, Mail } from "lucide-react";
-import { Alert, Slide, SlideProps } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import { SnackBarContext } from "../store/SnackBarContext";
 import { login } from "../services/auth/authService";
 import { UserCredential } from "firebase/auth";
 import { themeColors } from "../resources/colors";
-
-function SlideTransition(props: SlideProps) {
-  return <Slide {...props} direction="up" />;
-}
+import { showSnackBar } from "../utils/snackbar";
 
 function Login() {
   const [eyeState, setEyeState] = useState<boolean>(false);
@@ -47,40 +43,10 @@ function Login() {
 
     setIsLoading(false);
 
-    dispatch({
-      type: "TOGGLE_SNACKBAR_DATA",
-      payload: {
-        open: true,
-        children: (
-          <Alert
-            onClose={() =>
-              dispatch({
-                type: "TOGGLE_SNACKBAR_DATA",
-                payload: {
-                  open: false,
-                },
-              })
-            }
-            severity="success"
-            variant="filled"
-            sx={{ width: "100%", backgroundColor: setColor, color: "white" }}
-          >
-            {msg}
-          </Alert>
-        ),
-        props: {
-          anchorOrigin: { vertical: "bottom", horizontal: "right" },
-          autoHideDuration: 3000,
-          onClose: () =>
-            dispatch({
-              type: "TOGGLE_SNACKBAR_DATA",
-              payload: {
-                open: false,
-              },
-            }),
-          TransitionComponent: SlideTransition,
-        },
-      },
+    showSnackBar({
+      dispatch,
+      message: msg,
+      color: setColor,
     });
   };
 

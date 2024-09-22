@@ -9,6 +9,7 @@ export default {
       screens: {
         xxs: "500px",
         xs: "560px",
+        mdx: "700px",
       },
     },
   },
