@@ -40,6 +40,29 @@ export async function getFiles(): Promise<string[] | null> {
   }
 }
 
+export async function sendMessage(
+  query: string,
+  files: string[]
+): Promise<boolean> {
+  try {
+    const response = await fetch("http://localhost:5000/chat", {
+      method: "POST",
+      body: JSON.stringify({
+        query: query,
+        files: files,
+      }),
+    });
+    if (response.ok) {
+      console.log(response);
+
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function deleteFile(fileName: string): Promise<boolean> {
   try {
     const storage = getStorage();
