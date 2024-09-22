@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import SideBar from "../components/chat/SideBar";
+import Header from "../components/chat/Header";
 
 function Chat() {
   return (
     <div>
-      <div>
-        <Link to="/account">Account</Link>
+      <div className="flex">
+        <SideBar />
+        <Header />
       </div>
     </div>
   );
