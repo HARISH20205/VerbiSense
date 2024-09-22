@@ -38,7 +38,6 @@ export default function SideBar({ userFiles, isLoding }: SideBarProps) {
 
   const handleFileUpload = async (file: File | null) => {
     if (!file) return;
-    setIsUploadLoading(true);
     let msg = "";
     let setColor = "";
 
@@ -54,6 +53,7 @@ export default function SideBar({ userFiles, isLoding }: SideBarProps) {
       });
       return;
     }
+    setIsUploadLoading(true);
     if (fileSizeMB > 3) {
       msg = "Max file size is 3MB";
       setColor = themeColors.errorColor;
@@ -123,7 +123,7 @@ export default function SideBar({ userFiles, isLoding }: SideBarProps) {
               ref={inputRef}
               type="file"
               className="hidden"
-              accept="image/*,application/pdf,audio/*,video/mp4"
+              accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,audio/*,video/mp4"
               onChange={handleFileChange}
             />
           </div>
