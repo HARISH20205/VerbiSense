@@ -1,7 +1,7 @@
 import SideBar from "../components/chat/SideBar";
 import Header from "../components/chat/Header";
 import { useEffect, useState } from "react";
-import { getFiles } from "../services/chat/chatService";
+import { getFiles, sendMessage } from "../services/chat/chatService";
 import Question from "../components/chat/Question";
 import ChatBox from "../components/chat/ChatBox";
 
@@ -11,7 +11,6 @@ function Chat() {
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(window.innerWidth);
     async function getUploadedFiles() {
       const response = await getFiles();
       if (response) {
@@ -26,6 +25,13 @@ function Chat() {
 
   function openDrawer() {
     setShowDrawer(true);
+  }
+
+  async function onSendChat(query: string) {
+    const response = await sendMessage(query, uploadedFiles!);
+    if (response) {
+      console.log(response);
+    }
   }
 
   function closeDrawer() {
@@ -58,7 +64,7 @@ function Chat() {
         <div className="flex flex-col justify-between w-full">
           <Header showDrawer={openDrawer} />
           <ChatBox />
-          <Question />
+          <Question onSendQuery={onSendChat} />
         </div>
       </div>
     </div>

@@ -27,6 +27,8 @@ export default function SideBar({
     setFiles(userFiles);
   }, [userFiles]);
 
+  console.log(files);
+
   const histories: string[] = [
     "2019 - Founding of Acme AI",
     "2021 - Release of Acme AI v1.0",
@@ -34,45 +36,46 @@ export default function SideBar({
     "2023 - Acme AI v2.0 Launch",
   ];
 
-  console.log(files!.length);
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    await handleFileUpload(selectedFile!);
+    const selectedFiles = Array.from(e.target.files || []);
+
+    if ((files?.length || 0) + selectedFiles.length > 3) {
+      showSnackBar({
+        dispatch,
+        message: "Exceeded maximum file limit (Max 3 files allowed)",
+        color: themeColors.errorColor,
+      });
+      e.target.value = "";
+      return;
+    }
+
+    for (const file of selectedFiles) {
+      await handleFileUpload(file);
+    }
     e.target.value = "";
   };
 
   const handleFileUpload = async (file: File | null) => {
     if (!file) return;
-    let msg = "";
-    let setColor = "";
 
     const fileSizeMB = file.size / (1024 * 1024);
-    if (files!.length >= 3) {
-      let msg: string = "Exceeded maximum file limit";
-      let setColor: string = themeColors.primary;
 
+    if (fileSizeMB > 3) {
       showSnackBar({
         dispatch,
-        message: msg,
-        color: setColor,
+        message: "Max file size is 3MB",
+        color: themeColors.errorColor,
       });
       return;
     }
+
     setIsUploadLoading(true);
-    if (fileSizeMB > 3) {
-      msg = "Max file size is 3MB";
-      setColor = themeColors.errorColor;
-      showSnackBar({
-        dispatch,
-        message: msg,
-        color: setColor,
-      });
-    } else {
-      const response = await uploadFile(file);
-      if (response) {
-        setFiles((prevFiles) => [...(prevFiles || []), response]);
-      }
+    const response = await uploadFile(file);
+
+    if (response) {
+      setFiles((prevFiles) => [...(prevFiles || []), response]);
     }
+
     setIsUploadLoading(false);
   };
 
@@ -89,12 +92,44 @@ export default function SideBar({
     window.open(fileUrl);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(false);
-    const files = e.dataTransfer.files;
-    if (files.length) {
-      handleFileUpload(files[0]);
+
+    const allowedFileTypes = [
+      "text/plain",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "audio/mpeg",
+      "video/mp4",
+    ];
+
+    const droppedFiles = Array.from(e.dataTransfer.files);
+
+    if ((files?.length || 0) + droppedFiles.length > 3) {
+      showSnackBar({
+        dispatch,
+        message: "Exceeded maximum file limit (Max 3 files allowed)",
+        color: themeColors.errorColor,
+      });
+      return;
+    }
+
+    for (const file of droppedFiles) {
+      if (!allowedFileTypes.includes(file.type)) {
+        showSnackBar({
+          dispatch,
+          message: `File type not allowed: ${file.name}`,
+          color: themeColors.errorColor,
+        });
+        continue;
+      }
+
+      await handleFileUpload(file);
     }
   };
 
@@ -135,6 +170,7 @@ export default function SideBar({
               className="hidden"
               accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,audio/*,video/mp4"
               onChange={handleFileChange}
+              multiple
             />
           </div>
           <div
