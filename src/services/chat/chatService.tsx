@@ -45,8 +45,13 @@ export async function sendMessage(
   files: string[]
 ): Promise<boolean> {
   try {
+    console.log(query,files);
+    
     const response = await fetch("http://localhost:5000/chat", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         query: query,
         files: files,

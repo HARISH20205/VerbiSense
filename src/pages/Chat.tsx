@@ -10,15 +10,15 @@ function Chat() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
 
-  useEffect(() => {
-    async function getUploadedFiles() {
-      const response = await getFiles();
-      if (response) {
-        setUploadedFiles(response);
-      } else {
-        setUploadedFiles(null);
-      }
+  async function getUploadedFiles() {
+    const response = await getFiles();
+    if (response) {
+      setUploadedFiles(response);
+    } else {
+      setUploadedFiles(null);
     }
+  }
+  useEffect(() => {
     getUploadedFiles();
     setIsLoading(false);
   }, []);
@@ -28,6 +28,7 @@ function Chat() {
   }
 
   async function onSendChat(query: string) {
+    
     const response = await sendMessage(query, uploadedFiles!);
     if (response) {
       console.log(response);

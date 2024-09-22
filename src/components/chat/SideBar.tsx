@@ -27,7 +27,6 @@ export default function SideBar({
     setFiles(userFiles);
   }, [userFiles]);
 
-  console.log(files);
 
   const histories: string[] = [
     "2019 - Founding of Acme AI",

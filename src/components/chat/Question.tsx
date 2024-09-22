@@ -11,6 +11,7 @@ export default function Question({ onSendQuery }: QuestionProps) {
   function handleSendQuery() {
     const query = inputRef.current?.value;
     if (query && query.trim().length > 0) {
+      
       onSendQuery(query);
     } else {
       return;
