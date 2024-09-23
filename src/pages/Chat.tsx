@@ -23,12 +23,15 @@ function Chat() {
     setIsLoading(false);
   }, []);
 
+  const handleFilesChange = (updatedFiles: string[]) => {
+    setUploadedFiles(updatedFiles);
+  };
+
   function openDrawer() {
     setShowDrawer(true);
   }
 
   async function onSendChat(query: string) {
-    
     const response = await sendMessage(query, uploadedFiles!);
     if (response) {
       console.log(response);
@@ -49,6 +52,7 @@ function Chat() {
         <div className="w-[80%]">
           <SideBar
             closeDrawer={closeDrawer}
+            onFilesChange={handleFilesChange}
             isLoading={isLoading}
             userFiles={uploadedFiles}
           />
@@ -58,6 +62,7 @@ function Chat() {
         <div className="max-mdx:hidden w-[35%]">
           <SideBar
             closeDrawer={closeDrawer}
+            onFilesChange={handleFilesChange}
             isLoading={isLoading}
             userFiles={uploadedFiles}
           />

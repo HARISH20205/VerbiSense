@@ -10,12 +10,14 @@ interface SideBarProps {
   userFiles: string[] | null;
   isLoading: boolean;
   closeDrawer: () => void;
+  onFilesChange: (updatedFiles: string[]) => void;
 }
 
 export default function SideBar({
   userFiles,
   isLoading,
   closeDrawer,
+  onFilesChange,
 }: SideBarProps) {
   const [files, setFiles] = useState<string[] | null>(userFiles);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,7 +28,6 @@ export default function SideBar({
   useEffect(() => {
     setFiles(userFiles);
   }, [userFiles]);
-
 
   const histories: string[] = [
     "2019 - Founding of Acme AI",
@@ -72,7 +73,9 @@ export default function SideBar({
     const response = await uploadFile(file);
 
     if (response) {
-      setFiles((prevFiles) => [...(prevFiles || []), response]);
+      const updatedFiles = [...(files || []), response];
+      setFiles(updatedFiles);
+      onFilesChange(updatedFiles);
     }
 
     setIsUploadLoading(false);
@@ -81,9 +84,9 @@ export default function SideBar({
   const handleDeleteFile = async (viewUrl: string, fileName: string) => {
     const isDeleted = await deleteFile(fileName);
     if (isDeleted) {
-      setFiles(
-        (prevFiles) => prevFiles?.filter((file) => file !== viewUrl) || null
-      );
+      const updatedFiles = files?.filter((file) => file !== viewUrl) || null;
+      setFiles(updatedFiles);
+      onFilesChange(updatedFiles || []);
     }
   };
 
@@ -173,9 +176,12 @@ export default function SideBar({
             />
           </div>
           <div
-            className={`border-dashed border-2 p-4 max-mdx:hidden ${
+            className={`border-dashed border-2 p-4 max-mdx:hidden cursor-pointer ${
               dragging ? "border-black" : "border-gray-300"
             } transition-all`}
+            onClick={
+              isUploadLoading ? () => {} : () => inputRef.current?.click()
+            }
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -220,7 +226,7 @@ export default function SideBar({
               </div>
             ))
           ) : (
-            <p>No Images Uploaded</p>
+            <p>No Files Uploaded</p>
           )}
         </div>
       </div>
