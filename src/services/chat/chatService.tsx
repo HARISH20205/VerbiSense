@@ -63,6 +63,10 @@ export async function sendMessage(
       }),
     });
     if (response.ok) {
+      const data = await response.json();
+      console.log(data.response)
+      console.log(data.query);
+      
       return true;
     }
     return false;

@@ -3,75 +3,27 @@ export default function ChatBox() {
     <div className="w-full overflow-y-auto p-5">
       <div>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
-          eius error saepe dolores, at, nemo aspernatur impedit magni incidunt
-          nobis, mollitia tempore quibusdam! Quam aspernatur ipsam culpa alias
-          eius sapiente! Lorem ipsum dolor sit amet, consectetur adipisicing
-          elit. Architecto pariatur quibusdam fugit doloribus debitis ipsum
-          similique ipsam repudiandae vitae. Enim perspiciatis similique debitis
-          dolorem nostrum optio deleniti vero maiores sapiente. Lorem, ipsum
-          dolor sit amet consectetur adipisicing elit. Sequi aut assumenda ut
-          odit impedit fugit, illum soluta accusantium. Necessitatibus
-          inventore, quis unde repudiandae ut nostrum corrupti labore delectus
-          nobis libero. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Vitae nisi consequuntur quaerat numquam dicta quibusdam perferendis ad
-          eligendi, facilis corporis doloremque alias inventore ex omnis et
-          officiis autem voluptate amet. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Odit iste recusandae dolorum dolore molestiae in
-          incidunt assumenda repellat consequatur. Itaque blanditiis atque
-          ullam, non debitis porro aliquid tenetur veritatis totam? Lorem ipsum
-          dolor sit amet consectetur adipisicing elit. Quas illo sequi et
-          consequatur. Expedita facilis tempora commodi cum illo, voluptatem,
-          autem illum est ipsum fugiat necessitatibus iure aliquid fugit alias.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
-          eius error saepe dolores, at, nemo aspernatur impedit magni incidunt
-          nobis, mollitia tempore quibusdam! Quam aspernatur ipsam culpa alias
-          eius sapiente! Lorem ipsum dolor sit amet, consectetur adipisicing
-          elit. Architecto pariatur quibusdam fugit doloribus debitis ipsum
-          similique ipsam repudiandae vitae. Enim perspiciatis similique debitis
-          dolorem nostrum optio deleniti vero maiores sapiente. Lorem, ipsum
-          dolor sit amet consectetur adipisicing elit. Sequi aut assumenda ut
-          odit impedit fugit, illum soluta accusantium. Necessitatibus
-          inventore, quis unde repudiandae ut nostrum corrupti labore delectus
-          nobis libero. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Vitae nisi consequuntur quaerat numquam dicta quibusdam perferendis ad
-          eligendi, facilis corporis doloremque alias inventore ex omnis et
-          officiis autem voluptate amet. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Odit iste recusandae dolorum dolore molestiae in
-          incidunt assumenda repellat consequatur. Itaque blanditiis atque
-          ullam, non debitis porro aliquid tenetur veritatis totam? Lorem ipsum
-          dolor sit amet consectetur adipisicing elit. Quas illo sequi et
-          consequatur. Expedita facilis tempora commodi cum illo, voluptatem,
-          autem illum est ipsum fugiat necessitatibus iure aliquid fugit alias.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
-          eius error saepe dolores, at, nemo aspernatur impedit magni incidunt
-          nobis, mollitia tempore quibusdam! Quam aspernatur ipsam culpa alias
-          eius sapiente! Lorem ipsum dolor sit amet, consectetur adipisicing
-          elit. Architecto pariatur quibusdam fugit doloribus debitis ipsum
-          similique ipsam repudiandae vitae. Enim perspiciatis similique debitis
-          dolorem nostrum optio deleniti vero maiores sapiente. Lorem, ipsum
-          dolor sit amet consectetur adipisicing elit. Sequi aut assumenda ut
-          odit impedit fugit, illum soluta accusantium. Necessitatibus
-          inventore, quis unde repudiandae ut nostrum corrupti labore delectus
-          nobis libero. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Vitae nisi consequuntur quaerat numquam dicta quibusdam perferendis ad
-          eligendi, facilis corporis doloremque alias inventore ex omnis et
-          officiis autem voluptate amet. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Odit iste recusandae dolorum dolore molestiae in
-          incidunt assumenda repellat consequatur. Itaque blanditiis atque
-          ullam, non debitis porro aliquid tenetur veritatis totam? Lorem ipsum
-          dolorem nostrum optio deleniti vero maiores sapiente. Lorem, ipsum
-          dolor sit amet consectetur adipisicing elit. Sequi aut assumenda ut
-          odit impedit fugit, illum soluta accusantium. Necessitatibus
-          inventore, quis unde repudiandae ut nostrum corrupti labore delectus
-          nobis libero. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Vitae nisi consequuntur quaerat numquam dicta quibusdam perferendis ad
-          eligendi, facilis corporis doloremque alias inventore ex omnis et
-          officiis autem voluptate amet. Lorem ipsum dolor sit amet consectetur
-          adipisicing elit. Odit iste recusandae dolorum dolore molestiae in
-          incidunt assumenda repellat consequatur. Itaque blanditiis atque
-          ullam, non debitis porro aliquid tenetur veritatis totam? Lorem ipsum
-        </p>
+        This text is about the **CYRUS team's work in the RoboCup 2D Soccer Simulation League**, a competition where autonomous agents play soccer in a simulated environment. 
+
+The text focuses on the team's **achievements**, including their **wins** in RoboCup and other tournaments, and their **contributions** to the field of soccer simulation through various projects:
+
+* **Helios:** Developed a player matchup algorithm for exchanging positions.
+* **FRA-UNIted:** Created a Python-based framework for 2D soccer simulation.
+* **ITAN-droids:** Optimized field evaluator algorithm and goalkeeper performance.
+* **Persepolis:** Proposed an evolutionary algorithm for improving offensive strategy.
+* **YuShan:** Used a half-filled offensive framework for team portrait building.
+* **CYRUS:** Developed a defensive decision-making method using Reinforcement Learning (RL).
+* **CppDNN:** Developed C++ Deep Neural Networks for predicting opponent movements and improving passing prediction.
+* **Pyrus:** Created an open-source Python base for the 2D soccer simulation league, making it more accessible to developers.
+
+The text then delves into a specific project: **Multi Action Dribble (MAD)**, which aims to improve dribbling skills in the simulation. MAD uses DNNs for opponent prediction and combines it with a Chain Action Algorithm and an Agent 2D Dribble Action Generator to create effective dribbling strategies. 
+
+Finally, the text discusses the team's work on **pass prediction**, highlighting the challenges of dealing with noisy observations in the partial observation environment. Their approach involves developing a full-state action predictor, using Data Extractor to create more data, and employing machine learning algorithms for feature analysis. The text presents the results of these experiments, showing significant improvements in pass prediction accuracy.
+
+In addition to the technical aspects, the text also touches on the team's approach to **defensive strategies**, focusing on marking algorithms like Proximity-Based Marking, Danger-Based Marking, and the Hungarian Method.
+
+Overall, the text provides an overview of the CYRUS team's research and development efforts in the RoboCup 2D Soccer Simulation League, demonstrating their expertise in AI, machine learning, and game development.   
+      </p>
       </div>
     </div>
   );
