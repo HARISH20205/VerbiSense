@@ -10,7 +10,7 @@ interface SideBarProps {
   userFiles: string[] | null;
   isLoading: boolean;
   closeDrawer: () => void;
-  onFilesChange: (updatedFiles: string[]) => void;
+  onFilesChange: (file: string, isDeleted: boolean) => void;
 }
 
 export default function SideBar({
@@ -71,11 +71,9 @@ export default function SideBar({
 
     setIsUploadLoading(true);
     const response = await uploadFile(file);
-
     if (response) {
-      const updatedFiles = [...(files || []), response];
-      setFiles(updatedFiles);
-      onFilesChange(updatedFiles);
+      setFiles((prevFiles) => [...(prevFiles || []), response]);
+      onFilesChange(response, false);
     }
 
     setIsUploadLoading(false);
@@ -86,7 +84,7 @@ export default function SideBar({
     if (isDeleted) {
       const updatedFiles = files?.filter((file) => file !== viewUrl) || null;
       setFiles(updatedFiles);
-      onFilesChange(updatedFiles || []);
+      onFilesChange(viewUrl, true);
     }
   };
 

@@ -7,6 +7,7 @@ import ChatBox from "../components/chat/ChatBox";
 
 function Chat() {
   const [uploadedFiles, setUploadedFiles] = useState<string[] | null>([]);
+  const [updatedFiles, setUpdatedFiles] = useState<string[] | null>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
 
@@ -14,8 +15,10 @@ function Chat() {
     const response = await getFiles();
     if (response) {
       setUploadedFiles(response);
+      setUpdatedFiles(response);
     } else {
       setUploadedFiles(null);
+      setUpdatedFiles(null);
     }
   }
   useEffect(() => {
@@ -23,16 +26,21 @@ function Chat() {
     setIsLoading(false);
   }, []);
 
-  const handleFilesChange = (updatedFiles: string[]) => {
-    setUploadedFiles(updatedFiles);
+  const handleFilesChange = (newFile: string, isDeleted: boolean) => {
+    if (isDeleted) {
+      setUpdatedFiles(
+        (prevFiles) => prevFiles!.filter((file) => file !== newFile) || null
+      );
+    } else {
+      setUpdatedFiles((prevFiles) => [...(prevFiles || []), newFile]);
+    }
   };
-
   function openDrawer() {
     setShowDrawer(true);
   }
 
   async function onSendChat(query: string) {
-    const response = await sendMessage(query, uploadedFiles!);
+    const response = await sendMessage(query, updatedFiles!);
     if (response) {
       console.log(response);
     }

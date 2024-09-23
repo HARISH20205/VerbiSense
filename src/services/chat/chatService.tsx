@@ -45,8 +45,12 @@ export async function sendMessage(
   files: string[]
 ): Promise<boolean> {
   try {
-    console.log(query,files);
-    
+    const user = auth.currentUser;
+
+    if (!user) {
+      return false;
+    }
+
     const response = await fetch("http://localhost:5000/chat", {
       method: "POST",
       headers: {
@@ -55,11 +59,10 @@ export async function sendMessage(
       body: JSON.stringify({
         query: query,
         files: files,
+        userId: user.uid,
       }),
     });
     if (response.ok) {
-      console.log(response);
-
       return true;
     }
     return false;
