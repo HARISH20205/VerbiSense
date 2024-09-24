@@ -1,28 +1,41 @@
 import SideBar from "../components/chat/SideBar";
 import Header from "../components/chat/Header";
 import { useEffect, useState } from "react";
-import { getFiles, sendMessage } from "../services/chat/chatService";
+import {
+  getChatData,
+  getFiles,
+  sendMessage,
+} from "../services/chat/chatService";
 import Question from "../components/chat/Question";
 import ChatBox from "../components/chat/ChatBox";
+import { ChatModel } from "../models/chat/ChatModel";
 
 function Chat() {
   const [uploadedFiles, setUploadedFiles] = useState<string[] | null>([]);
   const [updatedFiles, setUpdatedFiles] = useState<string[] | null>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
+  const [chatData, setChatData] = useState<ChatModel[] | []>([]);
 
   async function getUploadedFiles() {
     const response = await getFiles();
     if (response) {
       setUploadedFiles(response);
       setUpdatedFiles(response);
+      handleGetChatData();
     } else {
       setUploadedFiles(null);
       setUpdatedFiles(null);
     }
   }
+
+  async function handleGetChatData() {
+    const chatData = await getChatData();
+    setChatData(chatData);
+  }
   useEffect(() => {
     getUploadedFiles();
+
     setIsLoading(false);
   }, []);
 
@@ -40,9 +53,9 @@ function Chat() {
   }
 
   async function onSendChat(query: string) {
-    const response = await sendMessage(query, updatedFiles!);
+    const response: ChatModel | null = await sendMessage(query, updatedFiles!);
     if (response) {
-      console.log(response);
+      setChatData((pre) => [...pre, response]);
     }
   }
 
@@ -77,7 +90,7 @@ function Chat() {
         </div>
         <div className="flex flex-col justify-between w-full">
           <Header showDrawer={openDrawer} />
-          <ChatBox />
+          <ChatBox chatData={chatData} />
           <Question onSendQuery={onSendChat} />
         </div>
       </div>

@@ -8,10 +8,9 @@ interface QuestionProps {
 export default function Question({ onSendQuery }: QuestionProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleSendQuery() {
+  async function handleSendQuery() {
     const query = inputRef.current?.value;
     if (query && query.trim().length > 0) {
-      
       onSendQuery(query);
     } else {
       return;
