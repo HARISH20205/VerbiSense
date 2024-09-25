@@ -14,6 +14,8 @@ import {
   collection,
   doc,
   getDocs,
+  orderBy,
+  query,
   serverTimestamp,
 } from "firebase/firestore";
 import { formatDateAsString } from "../../utils/helper";
@@ -53,18 +55,18 @@ async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
   const user = auth.currentUser;
 
   if (!user) return false;
-
   try {
     const formattedDate = formatDateAsString();
 
     const userChatsRef = collection(db, "users", user.uid, "chats");
 
     const dateDocRef = doc(userChatsRef, formattedDate);
-
-    await addDoc(collection(dateDocRef, "messages"), {
+    const chatDataWithTimestamp = {
       ...chatData,
-      timeStamp: serverTimestamp(),
-    });
+      timestamp: serverTimestamp(),
+    };
+
+    await addDoc(collection(dateDocRef, "messages"), chatDataWithTimestamp);
 
     return true;
   } catch (e) {
@@ -85,7 +87,9 @@ export async function getChatData(): Promise<ChatModel[] | []> {
     const dateDocRef = doc(userChatsRef, formattedDate);
     const messagesCollectionRef = collection(dateDocRef, "messages");
 
-    const querySnapshot = await getDocs(messagesCollectionRef);
+    const q = query(messagesCollectionRef, orderBy("timestamp", "asc"));
+
+    const querySnapshot = await getDocs(q);
 
     const messages = querySnapshot.docs.map((doc) => {
       const data = doc.data();
