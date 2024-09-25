@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ChatModel } from "../../models/chat/ChatModel";
 import { FileText, User } from "lucide-react";
+import { AuthContext } from "../../store/AuthContext";
 
 interface ChatBoxProps {
   chatData: ChatModel[] | [];
@@ -10,6 +11,8 @@ interface ChatBoxProps {
 export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
   const [chat, setChat] = useState<ChatModel[]>(chatData);
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
+
+  const { authUser } = useContext(AuthContext);
 
   useEffect(() => {
     setChat(chatData);
@@ -73,7 +76,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
             <div className="my-10">
               <section className="flex gap-1 items-center flex-row-reverse">
                 <User className="text-gray-600" />
-                <p className="font-semibold text-xl">You</p>
+                <p className="font-semibold text-xl">{authUser!.userName}</p>
               </section>
               <p className="mr-7 my-1 text-gray-600 text-right">{msg.query}</p>
             </div>

@@ -18,11 +18,18 @@ export default function Question({ onSendQuery }: QuestionProps) {
     }
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSendQuery();
+    }
+  };
+
   return (
     <div className="sticky bottom-0 z-10 bg-white">
       <div className="flex p-4 gap-3 border-t-2 border-gray">
         <input
           ref={inputRef}
+          onKeyDown={handleKeyDown}
           className="w-[100%] bg-[#F3F4F6] pl-4 py-2 rounded-md outline-none"
           placeholder="Ask a question..."
         ></input>

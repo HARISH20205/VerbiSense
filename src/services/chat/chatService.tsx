@@ -9,7 +9,13 @@ import {
 
 import { auth, db } from "../../config/firebase";
 import { ChatModel } from "../../models/chat/ChatModel";
-import { addDoc, collection, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { formatDateAsString } from "../../utils/helper";
 
 export async function uploadFile(file: File): Promise<string | null> {
@@ -55,7 +61,10 @@ async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
 
     const dateDocRef = doc(userChatsRef, formattedDate);
 
-    await addDoc(collection(dateDocRef, "messages"), chatData);
+    await addDoc(collection(dateDocRef, "messages"), {
+      ...chatData,
+      timeStamp: serverTimestamp(),
+    });
 
     return true;
   } catch (e) {
