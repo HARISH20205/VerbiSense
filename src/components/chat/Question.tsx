@@ -11,6 +11,7 @@ export default function Question({ onSendQuery }: QuestionProps) {
   async function handleSendQuery() {
     const query = inputRef.current?.value;
     if (query && query.trim().length > 0) {
+      inputRef.current.value = "";
       onSendQuery(query);
     } else {
       return;
@@ -25,8 +26,11 @@ export default function Question({ onSendQuery }: QuestionProps) {
           className="w-[100%] bg-[#F3F4F6] pl-4 py-2 rounded-md outline-none"
           placeholder="Ask a question..."
         ></input>
-        <div className="px-4 py-2 bg-black rounded-md hover:cursor-pointer">
-          <ChevronRight onClick={handleSendQuery} color="white" />
+        <div
+          onClick={handleSendQuery}
+          className="px-4 py-2 bg-black rounded-md hover:cursor-pointer"
+        >
+          <ChevronRight color="white" />
         </div>
       </div>
     </div>

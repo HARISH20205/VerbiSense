@@ -16,6 +16,7 @@ function Chat() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
   const [chatData, setChatData] = useState<ChatModel[] | []>([]);
+  const [chatLoading, setChatLoading] = useState<boolean>(false);
 
   async function getUploadedFiles() {
     const response = await getFiles();
@@ -53,9 +54,11 @@ function Chat() {
   }
 
   async function onSendChat(query: string) {
+    setChatLoading(true);
     const response: ChatModel | null = await sendMessage(query, updatedFiles!);
     if (response) {
       setChatData((pre) => [...pre, response]);
+      setChatLoading(false);
     }
   }
 
@@ -90,7 +93,7 @@ function Chat() {
         </div>
         <div className="flex flex-col justify-between w-full">
           <Header showDrawer={openDrawer} />
-          <ChatBox chatData={chatData} />
+          <ChatBox chatLoading={chatLoading} chatData={chatData} />
           <Question onSendQuery={onSendChat} />
         </div>
       </div>
