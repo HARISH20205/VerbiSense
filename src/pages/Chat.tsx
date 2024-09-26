@@ -69,11 +69,12 @@ function Chat() {
   return (
     <div>
       <div
+        onClick={closeDrawer}
         className={`mdx:hidden fixed z-20 w-full h-full bg-[rgba(255,255,255,0.7)] transform transition-transform duration-300 ease-in-out ${
           showDrawer ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="w-[80%]">
+        <div className="w-[80%]" onClick={(e) => e.stopPropagation()}>
           <SideBar
             closeDrawer={closeDrawer}
             onFilesChange={handleFilesChange}
