@@ -17,6 +17,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { formatDateAsString } from "../../utils/helper";
 
@@ -29,6 +30,46 @@ export async function uploadFile(file: File): Promise<string | null> {
     const downloadUrl = await getDownloadURL(fileRef);
     return downloadUrl;
   } catch (e) {
+    return null;
+  }
+}
+
+export async function getChats(): Promise<any[] | null> {
+  const user = auth.currentUser;
+
+  if (!user) return null;
+  try {
+    const userChatsRef = collection(db, "users", user.uid, "chats");
+    const querySnapshot = await getDocs(userChatsRef);
+
+    const chats = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const messagesRef = collection(
+          db,
+          "users",
+          user.uid,
+          "chats",
+          doc.id,
+          "messages"
+        );
+
+        const messagesQuery = query(messagesRef, orderBy("timestamp"));
+        const messagesSnapshot = await getDocs(messagesQuery);
+
+        const heading1 =
+          messagesSnapshot.docs.length > 0
+            ? messagesSnapshot.docs[0].data().heading1
+            : undefined;
+
+        return { [doc.id]: heading1 };
+      })
+    );
+
+    console.log(chats);
+
+    return chats;
+  } catch (e) {
+    console.error("Error fetching user chats:", e);
     return null;
   }
 }
@@ -59,15 +100,19 @@ async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
     const formattedDate = formatDateAsString();
 
     const userChatsRef = collection(db, "users", user.uid, "chats");
-
     const dateDocRef = doc(userChatsRef, formattedDate);
+
+    await setDoc(dateDocRef, {
+      timestamp: serverTimestamp(),
+    });
+
+    const messagesRef = collection(dateDocRef, "messages");
     const chatDataWithTimestamp = {
       ...chatData,
       timestamp: serverTimestamp(),
     };
 
-    await addDoc(collection(dateDocRef, "messages"), chatDataWithTimestamp);
-
+    await addDoc(messagesRef, chatDataWithTimestamp);
     return true;
   } catch (e) {
     console.error("Error writing document:", e);

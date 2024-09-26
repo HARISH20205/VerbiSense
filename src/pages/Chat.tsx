@@ -3,6 +3,7 @@ import Header from "../components/chat/Header";
 import { useEffect, useState } from "react";
 import {
   getChatData,
+  getChats,
   getFiles,
   sendMessage,
 } from "../services/chat/chatService";
@@ -24,6 +25,7 @@ function Chat() {
       setUploadedFiles(response);
       setUpdatedFiles(response);
       handleGetChatData();
+      getChats();
     } else {
       setUploadedFiles(null);
       setUpdatedFiles(null);
