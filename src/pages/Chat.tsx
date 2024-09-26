@@ -25,7 +25,7 @@ function Chat() {
       setUploadedFiles(response);
       setUpdatedFiles(response);
       handleGetChatData();
-      getChats();
+      // getChats();
     } else {
       setUploadedFiles(null);
       setUpdatedFiles(null);
