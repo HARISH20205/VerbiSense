@@ -3,6 +3,7 @@ import {
   Edit2Icon,
   Eye,
   EyeOff,
+  FileText,
   Lock,
   LogOut,
   Save,
@@ -124,10 +125,10 @@ function Account() {
 
   return (
     <div>
-      <div className="flex justify-between p-5">
+      <div className="flex justify-between p-4">
         <div className="flex gap-2">
-          <User />
-          <span className="font-semibold">VerbiSense</span>
+          <FileText />
+          <p className="font-bold text-lg">VerbiSense</p>
         </div>
         <div>
           <Link to="/chat" className="text-gray-600">

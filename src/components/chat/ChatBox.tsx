@@ -1,30 +1,150 @@
-export default function ChatBox() {
+import { useContext, useEffect, useRef, useState } from "react";
+import { ChatModel } from "../../models/chat/ChatModel";
+import { FileText, User } from "lucide-react";
+import { AuthContext } from "../../store/AuthContext";
+
+interface ChatBoxProps {
+  chatData: ChatModel[] | [];
+  chatLoading: boolean;
+}
+
+const renderExampleWithLinks = (example: string) => {
+  const urlRegex =
+    /(https?:\/\/[^\s]+|(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6})/g;
+  const parts = example.split(urlRegex);
+
+  return parts.map((part, index) => {
+    const cleanedPart = part.replace(/\*\*/g, "").trim();
+
+    if (urlRegex.test(cleanedPart)) {
+      return (
+        <a
+          target="_blank"
+          key={index}
+          href={
+            cleanedPart.startsWith("http")
+              ? cleanedPart
+              : `http://${cleanedPart}`
+          }
+          rel="noopener noreferrer"
+          className="text-black font-semibold hover:underline"
+        >
+          {cleanedPart}
+        </a>
+      );
+    }
+    return <span key={index}>{cleanedPart}</span>;
+  });
+};
+
+export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
+  const [chat, setChat] = useState<ChatModel[]>(chatData);
+  const chatBoxRef = useRef<HTMLDivElement | null>(null);
+
+  const { authUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    setChat(chatData);
+    console.log(chatData);
+  }, [chatData]);
+
+  useEffect(() => {
+    const animateScroll = (target: number) => {
+      const start = chatBoxRef.current?.scrollTop || 0;
+      const distance = target - start;
+      const duration = 2000;
+      let startTime: number | null = null;
+
+      const animation = (currentTime: number) => {
+        if (startTime === null) startTime = currentTime;
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        chatBoxRef.current!.scrollTop = start + distance * progress;
+
+        if (progress < 1) {
+          requestAnimationFrame(animation);
+        }
+      };
+
+      requestAnimationFrame(animation);
+    };
+
+    animateScroll(chatBoxRef.current?.scrollHeight || 0);
+  }, [chat]);
+
   return (
-    <div className="w-full overflow-y-auto p-5">
-      <div>
-        <p>
-        This text is about the **CYRUS team's work in the RoboCup 2D Soccer Simulation League**, a competition where autonomous agents play soccer in a simulated environment. 
+    <div ref={chatBoxRef} className="w-full flex-1 overflow-y-auto p-5">
+      {chat.map((msg, index) => {
+        const pointsArray = Object.entries(msg.points);
 
-The text focuses on the team's **achievements**, including their **wins** in RoboCup and other tournaments, and their **contributions** to the field of soccer simulation through various projects:
-
-* **Helios:** Developed a player matchup algorithm for exchanging positions.
-* **FRA-UNIted:** Created a Python-based framework for 2D soccer simulation.
-* **ITAN-droids:** Optimized field evaluator algorithm and goalkeeper performance.
-* **Persepolis:** Proposed an evolutionary algorithm for improving offensive strategy.
-* **YuShan:** Used a half-filled offensive framework for team portrait building.
-* **CYRUS:** Developed a defensive decision-making method using Reinforcement Learning (RL).
-* **CppDNN:** Developed C++ Deep Neural Networks for predicting opponent movements and improving passing prediction.
-* **Pyrus:** Created an open-source Python base for the 2D soccer simulation league, making it more accessible to developers.
-
-The text then delves into a specific project: **Multi Action Dribble (MAD)**, which aims to improve dribbling skills in the simulation. MAD uses DNNs for opponent prediction and combines it with a Chain Action Algorithm and an Agent 2D Dribble Action Generator to create effective dribbling strategies. 
-
-Finally, the text discusses the team's work on **pass prediction**, highlighting the challenges of dealing with noisy observations in the partial observation environment. Their approach involves developing a full-state action predictor, using Data Extractor to create more data, and employing machine learning algorithms for feature analysis. The text presents the results of these experiments, showing significant improvements in pass prediction accuracy.
-
-In addition to the technical aspects, the text also touches on the team's approach to **defensive strategies**, focusing on marking algorithms like Proximity-Based Marking, Danger-Based Marking, and the Hungarian Method.
-
-Overall, the text provides an overview of the CYRUS team's research and development efforts in the RoboCup 2D Soccer Simulation League, demonstrating their expertise in AI, machine learning, and game development.   
-      </p>
-      </div>
+        return (
+          <div key={index}>
+            <div className="my-10">
+              <section className="flex gap-1 items-center flex-row-reverse">
+                <User className="text-gray-600" />
+                <p className="font-semibold text-xl">{authUser!.userName}</p>
+              </section>
+              <p className="mr-7 my-1 text-gray-600 text-right">{msg.query}</p>
+            </div>
+            <div>
+              <section className="flex gap-1 items-center mb-2">
+                <FileText className="text-gray-600" />
+                <p className="font-semibold text-xl">VerbiSense</p>
+              </section>
+              <p className="md:ml-7 ml-4 my-1 mt-4 font text-lg font-medium">
+                {msg.heading1}
+              </p>
+              <p className="md:ml-16 ml-7 my-1 text-gray-600 leading-relaxed">
+                {msg.key_takeaways}
+              </p>
+              {pointsArray.map(([key, values]) => (
+                <div key={key}>
+                  <h3 className="md:ml-7 ml-4 my-2">{key}</h3>
+                  <ul className="list-disc list-inside leading-loose">
+                    {values.map((value, index) => (
+                      <li
+                        className="md:ml-16 ml-7 break-words  text-gray-600"
+                        key={index}
+                      >
+                        {renderExampleWithLinks(value)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              {msg.example.length !== 0 &&
+                msg.heading1.length !== 0 &&
+                msg.heading2.length !== 0 &&
+                pointsArray.length !== 0 && (
+                  <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
+                    Summary
+                  </p>
+                )}
+              <p className="md:ml-16 ml-7 my-1 text-gray-600">{msg.summary}</p>
+              {msg.example.length > 0 && (
+                <div>
+                  <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
+                    Example
+                  </p>
+                  {msg.example.map((example, exampleIndex) => (
+                    <li
+                      key={exampleIndex}
+                      className="md:ml-16 ml-7 my-1 text-gray-600 leading-loose"
+                    >
+                      {renderExampleWithLinks(example)}
+                    </li>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+      {chatLoading && (
+        <div className="flex justify-center my-4">
+          <div className="spinner"></div>
+        </div>
+      )}
     </div>
   );
 }

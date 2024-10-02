@@ -1,33 +1,63 @@
 import { ChevronRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface QuestionProps {
   onSendQuery: (query: string) => void;
 }
 
 export default function Question({ onSendQuery }: QuestionProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [inputHeight, setInputHeight] = useState<number>(40);
 
-  function handleSendQuery() {
+  const adjustHeight = () => {
+    if (inputRef.current) {
+      const length = inputRef.current.value.split("\n").length;
+      if (length > 1 && length < 7) {
+        const height = 22.85 * length;
+        inputRef.current.style.height = `${height}px`;
+        setInputHeight(height);
+      } else if (length === 1) {
+        inputRef.current.style.height = "40px";
+      } else {
+        const newHeight = Math.min(inputRef.current.scrollHeight, 200);
+        inputRef.current.style.height = `${newHeight}px`;
+        setInputHeight(newHeight);
+      }
+    }
+  };
+
+  async function handleSendQuery() {
     const query = inputRef.current?.value;
-    if (query && query.trim().length > 0) {
-      
+    if (query && query.trim().length > 0 && query.trim().length <= 6000) {
+      inputRef.current.value = "";
+      setInputHeight(40);
       onSendQuery(query);
-    } else {
-      return;
     }
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSendQuery();
+    }
+  };
+
   return (
     <div className="sticky bottom-0 z-10 bg-white">
-      <div className="flex p-4 gap-3 border-t-2 border-gray">
-        <input
+      <div className="flex items-end p-4 gap-3 border-t-2 border-gray">
+        <textarea
           ref={inputRef}
-          className="w-[100%] bg-[#F3F4F6] pl-4 py-2 rounded-md outline-none"
+          onKeyDown={handleKeyDown}
+          onInput={adjustHeight}
+          style={{ height: inputHeight }}
+          className="w-full bg-[#F3F4F6] pl-4 py-2 rounded-md outline-none resize-none overflow-y-auto"
           placeholder="Ask a question..."
-        ></input>
-        <div className="px-4 py-2 bg-black rounded-md hover:cursor-pointer">
-          <ChevronRight onClick={handleSendQuery} color="white" />
+        ></textarea>
+        <div
+          onClick={handleSendQuery}
+          className="flex h-[40px] items-center justify-center px-4 py-2 bg-black rounded-md hover:cursor-pointer"
+        >
+          <ChevronRight color="white" />
         </div>
       </div>
     </div>

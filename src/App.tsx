@@ -37,6 +37,10 @@ export default function App() {
               element={<ProtectedRoute element={<Chat />} />}
             ></Route>
             <Route
+              path="/chat/:id"
+              element={<ProtectedRoute element={<Chat />} />}
+            ></Route>
+            <Route
               path="/account"
               element={<ProtectedRoute element={<Account />} />}
             ></Route>

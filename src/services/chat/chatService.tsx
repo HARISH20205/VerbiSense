@@ -7,7 +7,19 @@ import {
   uploadBytes,
 } from "firebase/storage";
 
-import { auth } from "../../config/firebase";
+import { auth, db } from "../../config/firebase";
+import { ChatModel } from "../../models/chat/ChatModel";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { formatDateAsString } from "../../utils/helper";
 
 export async function uploadFile(file: File): Promise<string | null> {
   try {
@@ -18,6 +30,47 @@ export async function uploadFile(file: File): Promise<string | null> {
     const downloadUrl = await getDownloadURL(fileRef);
     return downloadUrl;
   } catch (e) {
+    return null;
+  }
+}
+
+export async function getHistory(): Promise<any[] | null> {
+  const user = auth.currentUser;
+
+  if (!user) return null;
+  try {
+    const formattedDate = formatDateAsString();
+    const userChatsRef = collection(db, "users", user.uid, "chats");
+    const querySnapshot = await getDocs(userChatsRef);
+
+    const chats = await Promise.all(
+      querySnapshot.docs
+        .filter((doc) => doc.id !== formattedDate)
+        .map(async (doc) => {
+          const messagesRef = collection(
+            db,
+            "users",
+            user.uid,
+            "chats",
+            doc.id,
+            "messages"
+          );
+
+          const messagesQuery = query(messagesRef, orderBy("timestamp"));
+          const messagesSnapshot = await getDocs(messagesQuery);
+
+          const heading1 =
+            messagesSnapshot.docs.length > 0
+              ? messagesSnapshot.docs[0].data().heading1
+              : undefined;
+
+          return { [doc.id]: heading1 };
+        })
+    );
+
+    return chats;
+  } catch (e) {
+    console.error("Error fetching user chats:", e);
     return null;
   }
 }
@@ -40,15 +93,94 @@ export async function getFiles(): Promise<string[] | null> {
   }
 }
 
+async function saveInFireStore(
+  chatData: ChatModel,
+  date: string | undefined
+): Promise<boolean> {
+  const user = auth.currentUser;
+
+  if (!user) return false;
+  try {
+    const formattedDate = formatDateAsString();
+
+    const userChatsRef = collection(db, "users", user.uid, "chats");
+    const dateDocRef = doc(
+      userChatsRef,
+      date == undefined ? formattedDate : date
+    );
+
+    await setDoc(dateDocRef, {
+      timestamp: serverTimestamp(),
+    });
+
+    const messagesRef = collection(dateDocRef, "messages");
+    const chatDataWithTimestamp = {
+      ...chatData,
+      timestamp: serverTimestamp(),
+    };
+
+    await addDoc(messagesRef, chatDataWithTimestamp);
+    return true;
+  } catch (e) {
+    console.error("Error writing document:", e);
+    return false;
+  }
+}
+
+export async function getChatData(
+  date: string | undefined
+): Promise<ChatModel[] | []> {
+  const user = auth.currentUser;
+
+  if (!user) return [];
+
+  try {
+    const formattedDate = formatDateAsString();
+
+    const userChatsRef = collection(db, "users", user.uid, "chats");
+    const dateDocRef = doc(
+      userChatsRef,
+      date == undefined ? formattedDate : date
+    );
+    const messagesCollectionRef = collection(dateDocRef, "messages");
+
+    const q = query(messagesCollectionRef, orderBy("timestamp", "asc"));
+
+    const querySnapshot = await getDocs(q);
+
+    const messages = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      const chatModel: ChatModel = {
+        query: data.query || "",
+        heading1: data.heading1 || "",
+        heading2: data.heading2 || [],
+        key_takeaways: data.key_takeaways || "",
+        points: data.points || {},
+        example: data.example || [],
+        summary: data.summary || "",
+      };
+
+      return chatModel;
+    });
+
+    return messages;
+  } catch (e) {
+    console.error("Error fetching messages:", e);
+    return [];
+  }
+}
+
 export async function sendMessage(
   query: string,
-  files: string[]
-): Promise<boolean> {
+  files: string[],
+  date: string | undefined
+): Promise<ChatModel | null> {
   try {
     const user = auth.currentUser;
 
     if (!user) {
-      return false;
+      return null;
     }
 
     const response = await fetch("http://localhost:5000/chat", {
@@ -64,14 +196,25 @@ export async function sendMessage(
     });
     if (response.ok) {
       const data = await response.json();
-      console.log(data.response)
-      console.log(data.query);
-      
-      return true;
+
+      const chatData: ChatModel = {
+        query: data.query,
+        heading1: data.response.heading1,
+        heading2: data.response.heading2,
+        key_takeaways: data.response.key_takeaways,
+        points: data.response.points,
+        example: data.response.example,
+        summary: data.response.summary,
+      };
+      const savedInFireStore = await saveInFireStore(chatData, date);
+      if (savedInFireStore) {
+        return chatData;
+      }
+      return null;
     }
-    return false;
+    return null;
   } catch (e) {
-    return false;
+    return null;
   }
 }
 

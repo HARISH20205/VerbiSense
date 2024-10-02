@@ -1,10 +1,34 @@
-import { Eye, FileText, Trash2, Upload, X } from "lucide-react";
-import { useRef, useState, ChangeEvent, useContext, useEffect } from "react";
+import {
+  Calendar,
+  Clock10,
+  Eye,
+  FileText,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
+import {
+  useRef,
+  useState,
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { SnackBarContext } from "../../store/SnackBarContext";
 import { themeColors } from "../../resources/colors";
-import { deleteFile, uploadFile } from "../../services/chat/chatService";
-import { getFilenameFromUrl, truncateFilename } from "../../utils/helper";
+import {
+  deleteFile,
+  getHistory,
+  uploadFile,
+} from "../../services/chat/chatService";
+import {
+  formatDate,
+  getFilenameFromUrl,
+  truncateFilename,
+} from "../../utils/helper";
 import { showSnackBar } from "../../utils/snackbar";
+import { Link, useParams } from "react-router-dom";
 
 interface SideBarProps {
   userFiles: string[] | null;
@@ -13,28 +37,52 @@ interface SideBarProps {
   onFilesChange: (file: string, isDeleted: boolean) => void;
 }
 
+type HistoryState = {
+  displayString: string;
+  urlString: string;
+};
+
 export default function SideBar({
   userFiles,
   isLoading,
   closeDrawer,
   onFilesChange,
 }: SideBarProps) {
-  const [files, setFiles] = useState<string[] | null>(userFiles);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false);
   const [_, dispatch] = useContext(SnackBarContext);
   const [dragging, setDragging] = useState(false);
+  const [files, setFiles] = useState<string[] | null>(userFiles);
+  const [histories, setHistories] = useState<HistoryState[] | []>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
+
+  const { id } = useParams();
 
   useEffect(() => {
     setFiles(userFiles);
+
+    getDates();
   }, [userFiles]);
 
-  const histories: string[] = [
-    "2019 - Founding of Acme AI",
-    "2021 - Release of Acme AI v1.0",
-    "2022 - Acme AI Raises Series A",
-    "2023 - Acme AI v2.0 Launch",
-  ];
+  const getDates = useCallback(async () => {
+    setIsHistoryLoading(true);
+    const history = await getHistory();
+
+    const formattedHistory: HistoryState[] = [];
+
+    for (let i = 0; i < history!.length; i++) {
+      let dateHistory = Object.keys(history![i]).toString();
+      let msg = Object.values(history![i]).toString();
+      const formattedDate: string = formatDate(dateHistory);
+      const setHistory = `${formattedDate} - ${msg}`;
+      formattedHistory.push({
+        displayString: setHistory,
+        urlString: dateHistory,
+      });
+    }
+    setIsHistoryLoading(false);
+    setHistories(formattedHistory);
+  }, []);
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -229,10 +277,44 @@ export default function SideBar({
         </div>
       </div>
       <div className="text-gray-600 flex flex-col gap-2">
-        <p className="text-gray-900 font-bold">History</p>
-        {histories.map((history, key) => (
-          <p key={key}>{history}</p>
-        ))}
+        <p className="text-gray-900 font-bold border-b-2 pb-2">History</p>
+        {isHistoryLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            <p className="flex gap-2 items-center my-2 ">
+              <Clock10
+                className={`${id === undefined && "text-black font-semibold"}`}
+                size={20}
+              />
+              <Link
+                className={`${id === undefined && "text-black font-semibold"}`}
+                to="/chat"
+              >
+                Today
+              </Link>
+            </p>
+            {histories.length > 0 &&
+              histories.map((history, key) => (
+                <p className="flex items-center my-2 gap-2" key={key}>
+                  <Calendar
+                    className={`${
+                      id === history.urlString && "text-black font-semibold"
+                    }`}
+                    size={20}
+                  />
+                  <Link
+                    className={`${
+                      id === history.urlString && "text-black font-semibold"
+                    }`}
+                    to={`/chat/${history.urlString}`}
+                  >
+                    {history.displayString}
+                  </Link>
+                </p>
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );
