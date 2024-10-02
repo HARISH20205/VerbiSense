@@ -8,6 +8,30 @@ interface ChatBoxProps {
   chatLoading: boolean;
 }
 
+const renderExampleWithLinks = (example: string) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = example.split(urlRegex);
+
+  return parts.map((part, index) => {
+    const cleanedPart = part.replace(/\*\*/g, "");
+
+    if (urlRegex.test(cleanedPart)) {
+      return (
+        <a
+          key={index}
+          href={cleanedPart}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-black font-semibold hover:underline"
+        >
+          {cleanedPart.trim()}
+        </a>
+      );
+    }
+    return <span key={index}>{cleanedPart}</span>;
+  });
+};
+
 export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
   const [chat, setChat] = useState<ChatModel[]>(chatData);
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
@@ -42,30 +66,6 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
     animateScroll(chatBoxRef.current?.scrollHeight || 0);
   }, [chat]);
 
-  const renderExampleWithLinks = (example: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = example.split(urlRegex);
-
-    return parts.map((part, index) => {
-      const cleanedPart = part.replace(/\*\*/g, "");
-
-      if (urlRegex.test(cleanedPart)) {
-        return (
-          <a
-            key={index}
-            href={cleanedPart}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500"
-          >
-            {cleanedPart}
-          </a>
-        );
-      }
-      return <span key={index}>{cleanedPart}</span>;
-    });
-  };
-
   return (
     <div ref={chatBoxRef} className="w-full flex-1 overflow-y-auto p-5">
       {chat.map((msg, index) => {
@@ -85,33 +85,40 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
                 <FileText className="text-gray-600" />
                 <p className="font-semibold text-xl">VerbiSense</p>
               </section>
-              <p className="ml-7 my-1 font text-lg">{msg.heading1}</p>
-              <p className="ml-16 my-1 text-gray-600 leading-relaxed">
+              <p className="md:ml-7 ml-4 my-1 mt-4 font text-lg font-medium">
+                {msg.heading1}
+              </p>
+              <p className="md:ml-16 ml-7 my-1 text-gray-600 leading-relaxed">
                 {msg.key_takeaways}
               </p>
               {pointsArray.map(([key, values]) => (
                 <div key={key}>
-                  <h3 className="ml-7 my-2">{key}</h3>
+                  <h3 className="md:ml-7 ml-4 my-2">{key}</h3>
                   <ul className="list-disc list-inside leading-loose">
                     {values.map((value, index) => (
-                      <li className="ml-16 text-gray-600" key={index}>
-                        {value.toString()}
+                      <li
+                        className="md:ml-16 ml-7 break-words  text-gray-600"
+                        key={index}
+                      >
+                        {renderExampleWithLinks(value)}
                       </li>
                     ))}
                   </ul>
                 </div>
               ))}
-              <p className="ml-7 my-1 font text-lg leading-relaxed">Summary</p>
-              <p className="ml-16 my-1 text-gray-600">{msg.summary}</p>
+              <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
+                Summary
+              </p>
+              <p className="md:ml-16 ml-7 my-1 text-gray-600">{msg.summary}</p>
               {msg.example.length > 0 && (
                 <div>
-                  <p className="ml-7 my-1 font text-lg leading-relaxed">
+                  <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
                     Example
                   </p>
                   {msg.example.map((example, exampleIndex) => (
                     <li
                       key={exampleIndex}
-                      className="ml-16 my-1 text-gray-600 leading-loose"
+                      className="md:ml-16 ml-7 my-1 text-gray-600 leading-loose"
                     >
                       {renderExampleWithLinks(example)}
                     </li>

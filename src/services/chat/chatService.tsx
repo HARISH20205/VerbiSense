@@ -17,6 +17,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { formatDateAsString } from "../../utils/helper";
 
@@ -33,35 +34,38 @@ export async function uploadFile(file: File): Promise<string | null> {
   }
 }
 
-export async function getChats(): Promise<any[] | null> {
+export async function getHistory(): Promise<any[] | null> {
   const user = auth.currentUser;
 
   if (!user) return null;
   try {
+    const formattedDate = formatDateAsString();
     const userChatsRef = collection(db, "users", user.uid, "chats");
     const querySnapshot = await getDocs(userChatsRef);
 
     const chats = await Promise.all(
-      querySnapshot.docs.map(async (doc) => {
-        const messagesRef = collection(
-          db,
-          "users",
-          user.uid,
-          "chats",
-          doc.id,
-          "messages"
-        );
+      querySnapshot.docs
+        .filter((doc) => doc.id !== formattedDate)
+        .map(async (doc) => {
+          const messagesRef = collection(
+            db,
+            "users",
+            user.uid,
+            "chats",
+            doc.id,
+            "messages"
+          );
 
-        const messagesQuery = query(messagesRef, orderBy("timestamp"));
-        const messagesSnapshot = await getDocs(messagesQuery);
+          const messagesQuery = query(messagesRef, orderBy("timestamp"));
+          const messagesSnapshot = await getDocs(messagesQuery);
 
-        const heading1 =
-          messagesSnapshot.docs.length > 0
-            ? messagesSnapshot.docs[0].data().heading1
-            : undefined;
+          const heading1 =
+            messagesSnapshot.docs.length > 0
+              ? messagesSnapshot.docs[0].data().heading1
+              : undefined;
 
-        return { [doc.id]: heading1 };
-      })
+          return { [doc.id]: heading1 };
+        })
     );
 
     return chats;
@@ -89,7 +93,10 @@ export async function getFiles(): Promise<string[] | null> {
   }
 }
 
-async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
+async function saveInFireStore(
+  chatData: ChatModel,
+  date: string | undefined
+): Promise<boolean> {
   const user = auth.currentUser;
 
   if (!user) return false;
@@ -97,11 +104,14 @@ async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
     const formattedDate = formatDateAsString();
 
     const userChatsRef = collection(db, "users", user.uid, "chats");
-    const dateDocRef = doc(userChatsRef, formattedDate);
+    const dateDocRef = doc(
+      userChatsRef,
+      date == undefined ? formattedDate : date
+    );
 
-    // await setDoc(dateDocRef, {
-    //   timestamp: serverTimestamp(),
-    // });
+    await setDoc(dateDocRef, {
+      timestamp: serverTimestamp(),
+    });
 
     const messagesRef = collection(dateDocRef, "messages");
     const chatDataWithTimestamp = {
@@ -117,7 +127,9 @@ async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
   }
 }
 
-export async function getChatData(): Promise<ChatModel[] | []> {
+export async function getChatData(
+  date: string | undefined
+): Promise<ChatModel[] | []> {
   const user = auth.currentUser;
 
   if (!user) return [];
@@ -126,7 +138,10 @@ export async function getChatData(): Promise<ChatModel[] | []> {
     const formattedDate = formatDateAsString();
 
     const userChatsRef = collection(db, "users", user.uid, "chats");
-    const dateDocRef = doc(userChatsRef, formattedDate);
+    const dateDocRef = doc(
+      userChatsRef,
+      date == undefined ? formattedDate : date
+    );
     const messagesCollectionRef = collection(dateDocRef, "messages");
 
     const q = query(messagesCollectionRef, orderBy("timestamp", "asc"));
@@ -158,7 +173,8 @@ export async function getChatData(): Promise<ChatModel[] | []> {
 
 export async function sendMessage(
   query: string,
-  files: string[]
+  files: string[],
+  date: string | undefined
 ): Promise<ChatModel | null> {
   try {
     const user = auth.currentUser;
@@ -180,6 +196,7 @@ export async function sendMessage(
     });
     if (response.ok) {
       const data = await response.json();
+
       const chatData: ChatModel = {
         query: data.query,
         heading1: data.response.heading1,
@@ -189,7 +206,7 @@ export async function sendMessage(
         example: data.response.example,
         summary: data.response.summary,
       };
-      const savedInFireStore = await saveInFireStore(chatData);
+      const savedInFireStore = await saveInFireStore(chatData, date);
       if (savedInFireStore) {
         return chatData;
       }

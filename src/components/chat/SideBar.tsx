@@ -1,10 +1,17 @@
 import { Eye, FileText, Trash2, Upload, X } from "lucide-react";
-import { useRef, useState, ChangeEvent, useContext, useEffect } from "react";
+import {
+  useRef,
+  useState,
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { SnackBarContext } from "../../store/SnackBarContext";
 import { themeColors } from "../../resources/colors";
 import {
   deleteFile,
-  getChats,
+  getHistory,
   uploadFile,
 } from "../../services/chat/chatService";
 import {
@@ -13,6 +20,7 @@ import {
   truncateFilename,
 } from "../../utils/helper";
 import { showSnackBar } from "../../utils/snackbar";
+import { Link, useParams } from "react-router-dom";
 
 interface SideBarProps {
   userFiles: string[] | null;
@@ -21,37 +29,49 @@ interface SideBarProps {
   onFilesChange: (file: string, isDeleted: boolean) => void;
 }
 
+type HistoryState = {
+  displayString: string;
+  urlString: string;
+};
+
 export default function SideBar({
   userFiles,
   isLoading,
   closeDrawer,
   onFilesChange,
 }: SideBarProps) {
-  const [files, setFiles] = useState<string[] | null>(userFiles);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false);
   const [_, dispatch] = useContext(SnackBarContext);
   const [dragging, setDragging] = useState(false);
-  const [histories, setHistories] = useState<string[] | []>([]);
+  const [files, setFiles] = useState<string[] | null>(userFiles);
+  const [histories, setHistories] = useState<HistoryState[] | []>([]);
+
+  const { id } = useParams();
 
   useEffect(() => {
     setFiles(userFiles);
+
     getDates();
   }, [userFiles]);
 
-  async function getDates() {
-    const history = await getChats();
-    const formattedHistory: string[] = [];
+  const getDates = useCallback(async () => {
+    const history = await getHistory();
+
+    const formattedHistory: HistoryState[] = [];
 
     for (let i = 0; i < history!.length; i++) {
       let dateHistory = Object.keys(history![i]).toString();
       let msg = Object.values(history![i]).toString();
       const formattedDate: string = formatDate(dateHistory);
       const setHistory = `${formattedDate} - ${msg}`;
-      formattedHistory.push(setHistory);
+      formattedHistory.push({
+        displayString: setHistory,
+        urlString: dateHistory,
+      });
     }
     setHistories(formattedHistory);
-  }
+  }, []);
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -247,8 +267,29 @@ export default function SideBar({
       </div>
       <div className="text-gray-600 flex flex-col gap-2">
         <p className="text-gray-900 font-bold">History</p>
-        {histories.length > 0 &&
-          histories.map((history, key) => <p key={key}>{history}</p>)}
+        <div>
+          <p>
+            <Link
+              className={`${id === undefined && "text-black font-semibold"}`}
+              to="/chat"
+            >
+              Today
+            </Link>
+          </p>
+          {histories.length > 0 &&
+            histories.map((history, key) => (
+              <p key={key}>
+                <Link
+                  className={`${
+                    id === history.urlString && "text-black font-semibold"
+                  }`}
+                  to={`/chat/${history.urlString}`}
+                >
+                  {history.displayString}
+                </Link>
+              </p>
+            ))}
+        </div>
       </div>
     </div>
   );
