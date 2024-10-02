@@ -1,4 +1,12 @@
-import { Eye, FileText, Trash2, Upload, X } from "lucide-react";
+import {
+  Calendar,
+  Clock10,
+  Eye,
+  FileText,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import {
   useRef,
   useState,
@@ -46,6 +54,7 @@ export default function SideBar({
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<string[] | null>(userFiles);
   const [histories, setHistories] = useState<HistoryState[] | []>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
 
   const { id } = useParams();
 
@@ -56,6 +65,7 @@ export default function SideBar({
   }, [userFiles]);
 
   const getDates = useCallback(async () => {
+    setIsHistoryLoading(true);
     const history = await getHistory();
 
     const formattedHistory: HistoryState[] = [];
@@ -70,6 +80,7 @@ export default function SideBar({
         urlString: dateHistory,
       });
     }
+    setIsHistoryLoading(false);
     setHistories(formattedHistory);
   }, []);
 
@@ -266,30 +277,44 @@ export default function SideBar({
         </div>
       </div>
       <div className="text-gray-600 flex flex-col gap-2">
-        <p className="text-gray-900 font-bold">History</p>
-        <div>
-          <p>
-            <Link
-              className={`${id === undefined && "text-black font-semibold"}`}
-              to="/chat"
-            >
-              Today
-            </Link>
-          </p>
-          {histories.length > 0 &&
-            histories.map((history, key) => (
-              <p key={key}>
-                <Link
-                  className={`${
-                    id === history.urlString && "text-black font-semibold"
-                  }`}
-                  to={`/chat/${history.urlString}`}
-                >
-                  {history.displayString}
-                </Link>
-              </p>
-            ))}
-        </div>
+        <p className="text-gray-900 font-bold border-b-2 pb-2">History</p>
+        {isHistoryLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            <p className="flex gap-2 items-center my-2 ">
+              <Clock10
+                className={`${id === undefined && "text-black font-semibold"}`}
+                size={20}
+              />
+              <Link
+                className={`${id === undefined && "text-black font-semibold"}`}
+                to="/chat"
+              >
+                Today
+              </Link>
+            </p>
+            {histories.length > 0 &&
+              histories.map((history, key) => (
+                <p className="flex items-center my-2 gap-2" key={key}>
+                  <Calendar
+                    className={`${
+                      id === history.urlString && "text-black font-semibold"
+                    }`}
+                    size={20}
+                  />
+                  <Link
+                    className={`${
+                      id === history.urlString && "text-black font-semibold"
+                    }`}
+                    to={`/chat/${history.urlString}`}
+                  >
+                    {history.displayString}
+                  </Link>
+                </p>
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );

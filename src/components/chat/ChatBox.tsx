@@ -9,22 +9,27 @@ interface ChatBoxProps {
 }
 
 const renderExampleWithLinks = (example: string) => {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urlRegex =
+    /(https?:\/\/[^\s]+|(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6})/g;
   const parts = example.split(urlRegex);
 
   return parts.map((part, index) => {
-    const cleanedPart = part.replace(/\*\*/g, "");
+    const cleanedPart = part.replace(/\*\*/g, "").trim();
 
     if (urlRegex.test(cleanedPart)) {
       return (
         <a
-          key={index}
-          href={cleanedPart}
           target="_blank"
+          key={index}
+          href={
+            cleanedPart.startsWith("http")
+              ? cleanedPart
+              : `http://${cleanedPart}`
+          }
           rel="noopener noreferrer"
           className="text-black font-semibold hover:underline"
         >
-          {cleanedPart.trim()}
+          {cleanedPart}
         </a>
       );
     }
@@ -40,6 +45,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
 
   useEffect(() => {
     setChat(chatData);
+    console.log(chatData);
   }, [chatData]);
 
   useEffect(() => {
@@ -106,9 +112,14 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
                   </ul>
                 </div>
               ))}
-              <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
-                Summary
-              </p>
+              {msg.example.length !== 0 &&
+                msg.heading1.length !== 0 &&
+                msg.heading2.length !== 0 &&
+                pointsArray.length !== 0 && (
+                  <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
+                    Summary
+                  </p>
+                )}
               <p className="md:ml-16 ml-7 my-1 text-gray-600">{msg.summary}</p>
               {msg.example.length > 0 && (
                 <div>

@@ -1,6 +1,6 @@
 import SideBar from "../components/chat/SideBar";
 import Header from "../components/chat/Header";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   getChatData,
   getFiles,
@@ -11,6 +11,9 @@ import ChatBox from "../components/chat/ChatBox";
 import { ChatModel } from "../models/chat/ChatModel";
 import { useParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
+import { SnackBarContext } from "../store/SnackBarContext";
+import { showSnackBar } from "../utils/snackbar";
+import { themeColors } from "../resources/colors";
 
 function Chat() {
   const [uploadedFiles, setUploadedFiles] = useState<string[] | null>([]);
@@ -19,6 +22,7 @@ function Chat() {
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
   const [chatData, setChatData] = useState<ChatModel[] | []>([]);
   const [chatLoading, setChatLoading] = useState<boolean>(false);
+  const [_, dispatch] = useContext(SnackBarContext);
 
   const { id } = useParams();
 
@@ -74,6 +78,13 @@ function Chat() {
     );
     if (response) {
       setChatData((pre) => [...pre, response]);
+      setChatLoading(false);
+    } else {
+      showSnackBar({
+        color: themeColors.errorColor,
+        dispatch: dispatch,
+        message: "Failed to get the response.",
+      });
       setChatLoading(false);
     }
   }
