@@ -2,8 +2,16 @@ import { Eye, FileText, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState, ChangeEvent, useContext, useEffect } from "react";
 import { SnackBarContext } from "../../store/SnackBarContext";
 import { themeColors } from "../../resources/colors";
-import { deleteFile, uploadFile } from "../../services/chat/chatService";
-import { getFilenameFromUrl, truncateFilename } from "../../utils/helper";
+import {
+  deleteFile,
+  getChats,
+  uploadFile,
+} from "../../services/chat/chatService";
+import {
+  formatDate,
+  getFilenameFromUrl,
+  truncateFilename,
+} from "../../utils/helper";
 import { showSnackBar } from "../../utils/snackbar";
 
 interface SideBarProps {
@@ -24,17 +32,26 @@ export default function SideBar({
   const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false);
   const [_, dispatch] = useContext(SnackBarContext);
   const [dragging, setDragging] = useState(false);
+  const [histories, setHistories] = useState<string[] | []>([]);
 
   useEffect(() => {
     setFiles(userFiles);
+    getDates();
   }, [userFiles]);
 
-  const histories: string[] = [
-    "2019 - Founding of Acme AI",
-    "2021 - Release of Acme AI v1.0",
-    "2022 - Acme AI Raises Series A",
-    "2023 - Acme AI v2.0 Launch",
-  ];
+  async function getDates() {
+    const history = await getChats();
+    const formattedHistory: string[] = [];
+
+    for (let i = 0; i < history!.length; i++) {
+      let dateHistory = Object.keys(history![i]).toString();
+      let msg = Object.values(history![i]).toString();
+      const formattedDate: string = formatDate(dateHistory);
+      const setHistory = `${formattedDate} - ${msg}`;
+      formattedHistory.push(setHistory);
+    }
+    setHistories(formattedHistory);
+  }
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -230,9 +247,8 @@ export default function SideBar({
       </div>
       <div className="text-gray-600 flex flex-col gap-2">
         <p className="text-gray-900 font-bold">History</p>
-        {histories.map((history, key) => (
-          <p key={key}>{history}</p>
-        ))}
+        {histories.length > 0 &&
+          histories.map((history, key) => <p key={key}>{history}</p>)}
       </div>
     </div>
   );

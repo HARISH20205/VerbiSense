@@ -3,7 +3,6 @@ import Header from "../components/chat/Header";
 import { useEffect, useState } from "react";
 import {
   getChatData,
-  getChats,
   getFiles,
   sendMessage,
 } from "../services/chat/chatService";

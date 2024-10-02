@@ -17,7 +17,6 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  setDoc,
 } from "firebase/firestore";
 import { formatDateAsString } from "../../utils/helper";
 
@@ -65,8 +64,6 @@ export async function getChats(): Promise<any[] | null> {
       })
     );
 
-    console.log(chats);
-
     return chats;
   } catch (e) {
     console.error("Error fetching user chats:", e);
@@ -102,9 +99,9 @@ async function saveInFireStore(chatData: ChatModel): Promise<boolean> {
     const userChatsRef = collection(db, "users", user.uid, "chats");
     const dateDocRef = doc(userChatsRef, formattedDate);
 
-    await setDoc(dateDocRef, {
-      timestamp: serverTimestamp(),
-    });
+    // await setDoc(dateDocRef, {
+    //   timestamp: serverTimestamp(),
+    // });
 
     const messagesRef = collection(dateDocRef, "messages");
     const chatDataWithTimestamp = {
