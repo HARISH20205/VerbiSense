@@ -11,9 +11,13 @@ export default function Question({ onSendQuery }: QuestionProps) {
 
   const adjustHeight = () => {
     if (inputRef.current) {
-      if (inputRef.current.value === "") {
+      const length = inputRef.current.value.split("\n").length;
+      if (length > 1 && length < 7) {
+        const height = 22.85 * length;
+        inputRef.current.style.height = `${height}px`;
+        setInputHeight(height);
+      } else if (length === 1) {
         inputRef.current.style.height = "40px";
-        setInputHeight(40);
       } else {
         const newHeight = Math.min(inputRef.current.scrollHeight, 200);
         inputRef.current.style.height = `${newHeight}px`;
