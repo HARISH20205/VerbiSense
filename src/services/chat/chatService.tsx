@@ -60,9 +60,10 @@ export async function getHistory(): Promise<any[] | null> {
           const messagesSnapshot = await getDocs(messagesQuery);
 
           const heading1 =
-            messagesSnapshot.docs.length > 0
+            messagesSnapshot.docs.length > 0 &&
+            messagesSnapshot.docs[0].data().heading1 != null
               ? messagesSnapshot.docs[0].data().heading1
-              : undefined;
+              : "Greeting";
 
           return { [doc.id]: heading1 };
         })

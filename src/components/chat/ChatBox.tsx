@@ -45,7 +45,6 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
 
   useEffect(() => {
     setChat(chatData);
-    console.log(chatData);
   }, [chatData]);
 
   useEffect(() => {
