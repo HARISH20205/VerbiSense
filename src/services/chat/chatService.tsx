@@ -41,11 +41,13 @@ export async function getHistory(): Promise<any[] | null> {
   try {
     const formattedDate = formatDateAsString();
     const userChatsRef = collection(db, "users", user.uid, "chats");
-    const querySnapshot = await getDocs(userChatsRef);
+    const chatsQuery = query(userChatsRef, orderBy("timestamp", "desc"));
+    const querySnapshot = await getDocs(chatsQuery);
 
     const chats = await Promise.all(
       querySnapshot.docs
         .filter((doc) => doc.id !== formattedDate)
+        .slice(0, 34)
         .map(async (doc) => {
           const messagesRef = collection(
             db,
