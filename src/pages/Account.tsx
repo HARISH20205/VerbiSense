@@ -125,7 +125,7 @@ function Account() {
 
   return (
     <div>
-      <div className="flex justify-between p-4">
+      <div className="flex justify-between h-[69.6px] items-center p-4 sticky top-0 left-0 bg-white border-b-gray-300 border-b-2">
         <div className="flex gap-2">
           <FileText />
           <p className="font-bold text-lg">VerbiSense</p>
@@ -136,9 +136,8 @@ function Account() {
           </Link>
         </div>
       </div>
-      <hr></hr>
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex items-start flex-col max-xxs:w-[90%] pt-7 max-xs:w-[80%] md:w-[50%] max-md:w-[60%] mx-auto gap-4  px-7 shadow-[0px_4px_10px_rgba(0,0,0,0.1)]">
+      <div className="flex items-center justify-center height-fixed">
+        <div className="flex items-start flex-col max-xxs:w-[90%] pt-7 max-xs:w-[80%] md:w-[50%] max-md:w-[60%] mx-auto gap-4 my-5  px-7 shadow-[0px_4px_10px_rgba(0,0,0,0.1)]">
           <p className="text-2xl font-semibold">Account Settings</p>
           <div className="flex gap-2">
             <User />

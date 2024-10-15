@@ -20,7 +20,12 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { formatDateAsString } from "../../utils/helper";
+import {
+  formatDateAsString,
+  geminiPrompt,
+  removeMarkdownCodeBlock,
+} from "../../utils/helper";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function uploadFile(file: File): Promise<string | null> {
   try {
@@ -102,7 +107,6 @@ async function saveInFireStore(
   date: string | undefined
 ): Promise<boolean> {
   const user = auth.currentUser;
-
   if (!user) return false;
   try {
     const formattedDate = formatDateAsString();
@@ -185,40 +189,67 @@ export async function sendMessage(
 ): Promise<ChatModel | null> {
   try {
     const user = auth.currentUser;
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const genAI = new GoogleGenerativeAI(apiKey);
 
     if (!user) {
       return null;
     }
 
-    const response = await fetch("http://localhost:5000/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: query,
-        files: files,
-        userId: user.uid,
-      }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-
-      const chatData: ChatModel = {
-        query: data.query,
-        heading1: data.response.heading1,
-        heading2: data.response.heading2,
-        key_takeaways: data.response.key_takeaways,
-        points: data.response.points,
-        example: data.response.example,
-        summary: data.response.summary,
-      };
-      const savedInFireStore = await saveInFireStore(chatData, date);
-      if (savedInFireStore) {
-        return chatData;
+    if (files.length > 0) {
+      const response = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: query,
+          files: files,
+          userId: user.uid,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const chatData: ChatModel = {
+          query: data.query,
+          heading1: data.response.heading1,
+          heading2: data.response.heading2,
+          key_takeaways: data.response.key_takeaways,
+          points: data.response.points,
+          example: data.response.example,
+          summary: data.response.summary,
+        };
+        const savedInFireStore = await saveInFireStore(chatData, date);
+        if (savedInFireStore) {
+          return chatData;
+        }
+        return null;
       }
-      return null;
+    } else {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const result = await model.generateContent(geminiPrompt(query));
+      const response = result.response;
+      const responseText = response.text();
+      const modifiedText = removeMarkdownCodeBlock(responseText).trim();
+      const data = JSON.parse(modifiedText);
+      if (response) {
+        const chatData: ChatModel = {
+          query: query,
+          heading1: data.heading1,
+          heading2: data.heading2,
+          key_takeaways: data.key_takeaways,
+          points: data.points,
+          example: data.example,
+          summary: data.summary,
+        };
+        const savedInFireStore = await saveInFireStore(chatData, date);
+        if (savedInFireStore) {
+          return chatData;
+        }
+        return null;
+      }
     }
+
     return null;
   } catch (e) {
     return null;
