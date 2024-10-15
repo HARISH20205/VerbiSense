@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { useContext, useRef, useState } from "react";
-import { SnackBarContext } from "../store/SnackBarContext";
 import { login } from "../services/auth/authService";
 import { UserCredential } from "firebase/auth";
 import { themeColors } from "../resources/colors";
 import { showSnackBar } from "../utils/snackbar";
+import { SnackBarContext } from "../store/snackBarContext";
 
 function Login() {
   const [eyeState, setEyeState] = useState<boolean>(false);

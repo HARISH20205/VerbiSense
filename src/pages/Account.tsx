@@ -17,7 +17,7 @@ import {
   logout,
   updateName,
 } from "../services/auth/authService";
-import { SnackBarContext } from "../store/SnackBarContext";
+import { SnackBarContext } from "../store/snackBarContext";
 import { themeColors } from "../resources/colors";
 import { showSnackBar } from "../utils/snackbar";
 

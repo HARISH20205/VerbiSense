@@ -57,7 +57,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <AuthContext.Provider value={ctxValue}>
-      <div>{children}</div>
+      <div className="font-sans">{children}</div>
     </AuthContext.Provider>
   );
 }

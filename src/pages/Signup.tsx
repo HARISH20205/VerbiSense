@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { useContext, useRef, useState } from "react";
-import { SnackBarContext } from "../store/SnackBarContext";
 import { emailRegex } from "../constants/regex";
 import { signup } from "../services/auth/authService";
 import { themeColors } from "../resources/colors";
 import { showSnackBar } from "../utils/snackbar";
+import { SnackBarContext } from "../store/snackBarContext";
 
 function Signup() {
   const [eyeState, setEyeState] = useState<boolean>(false);
@@ -124,7 +124,7 @@ function Signup() {
         <p className="text-gray-600">
           Already have an account?{" "}
           <Link to="/login">
-            <span className="text-gray-900">Log in</span>
+            <span className="text-gray-900 hover:underline">Log in</span>
           </Link>{" "}
         </p>
       </div>

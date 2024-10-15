@@ -15,7 +15,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { SnackBarContext } from "../../store/SnackBarContext";
+import { SnackBarContext } from "../../store/snackBarContext";
 import { themeColors } from "../../resources/colors";
 import {
   deleteFile,
