@@ -10,7 +10,7 @@ import Question from "../components/chat/Question";
 import ChatBox from "../components/chat/ChatBox";
 import { ChatModel } from "../models/chat/ChatModel";
 import { useParams } from "react-router-dom";
-import { SnackBarContext } from "../store/SnackBarContext";
+import { SnackBarContext } from "../store/snackBarContext";
 import { showSnackBar } from "../utils/snackbar";
 import { themeColors } from "../resources/colors";
 import { PacmanLoader } from "react-spinners";

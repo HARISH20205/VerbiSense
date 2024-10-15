@@ -9,7 +9,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import Account from "./pages/Account";
-import { SnackBarProvider } from "./store/SnackBarContext";
+import { SnackBarProvider } from "./store/snackBarContext";
 import AuthProvider from "./store/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRedirect from "./components/AuthRedirect";
