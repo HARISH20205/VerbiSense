@@ -13,6 +13,7 @@ import { SnackBarProvider } from "./store/SnackBarContext";
 import AuthProvider from "./store/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRedirect from "./components/AuthRedirect";
+import AboutPage from "./pages/AboutPage";
 
 export default function App() {
   return (
@@ -43,6 +44,10 @@ export default function App() {
             <Route
               path="/account"
               element={<ProtectedRoute element={<Account />} />}
+            ></Route>
+            <Route
+              path="/about"
+              element={<ProtectedRoute element={<AboutPage />} />}
             ></Route>
 
             <Route path="*" element={<Navigate to="/chat" replace />}></Route>

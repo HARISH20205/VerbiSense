@@ -10,10 +10,10 @@ import Question from "../components/chat/Question";
 import ChatBox from "../components/chat/ChatBox";
 import { ChatModel } from "../models/chat/ChatModel";
 import { useParams } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
 import { SnackBarContext } from "../store/SnackBarContext";
 import { showSnackBar } from "../utils/snackbar";
 import { themeColors } from "../resources/colors";
+import { PacmanLoader } from "react-spinners";
 
 function Chat() {
   const [uploadedFiles, setUploadedFiles] = useState<string[] | null>([]);
@@ -96,14 +96,7 @@ function Chat() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <CircularProgress
-          color="inherit"
-          size={50}
-          sx={{
-            animationDuration: "1s", // Controls the speed
-            animationTimingFunction: "ease-in-out", // Smooth out the animation
-          }}
-        />
+        <PacmanLoader size={35} />
       </div>
     );
   }
