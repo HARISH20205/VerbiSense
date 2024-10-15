@@ -56,7 +56,9 @@ function AuthProvider({ children }: AuthProviderProps) {
   };
 
   return (
-    <AuthContext.Provider value={ctxValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={ctxValue}>
+      <div>{children}</div>
+    </AuthContext.Provider>
   );
 }
 

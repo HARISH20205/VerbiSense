@@ -13,6 +13,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -112,9 +113,12 @@ async function saveInFireStore(
       date == undefined ? formattedDate : date
     );
 
-    await setDoc(dateDocRef, {
-      timestamp: serverTimestamp(),
-    });
+    const docSnapshot = await getDoc(dateDocRef);
+    if (!docSnapshot.exists() || !docSnapshot.data().timestamp) {
+      await setDoc(dateDocRef, {
+        timestamp: serverTimestamp(),
+      });
+    }
 
     const messagesRef = collection(dateDocRef, "messages");
     const chatDataWithTimestamp = {

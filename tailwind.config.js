@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        crimson: ['"Crimson Text"', "serif"],
+      },
       colors: {
         logoutColor: "#d04449",
       },

@@ -39,13 +39,42 @@ const renderExampleWithLinks = (example: string) => {
 
 export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
   const [chat, setChat] = useState<ChatModel[]>(chatData);
+  const [welcomeMessage, setWelcomeMessage] = useState<string>("");
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
-
   const { authUser } = useContext(AuthContext);
+
+  const welcomeMessages = [
+    "Hello", // English
+    "Bonjour", // French
+    "வணக்கம்", // Tamil
+    "Hallo", // German
+    "ようこそ", // Japanese
+    "హలో", // Telugu
+    "ഹലോ", // Malayalam
+    "नमस्ते", // Hindi
+    "Hola", // Spanish
+    "ಹಲೋ", // Kannada
+    "Olá", // Portuguese
+    "مرحبا", // Arabic
+    "Ciao", // Italian
+  ];
 
   useEffect(() => {
     setChat(chatData);
   }, [chatData]);
+
+  useEffect(() => {
+    if (chat.length === 0) {
+      setWelcomeMessage(welcomeMessages[0]);
+
+      const intervalId = setInterval(() => {
+        const randomIndex = Math.floor(Math.random() * welcomeMessages.length);
+        setWelcomeMessage(welcomeMessages[randomIndex]);
+      }, 1000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [chat.length]);
 
   useEffect(() => {
     const animateScroll = (target: number) => {
@@ -73,72 +102,82 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
 
   return (
     <div ref={chatBoxRef} className="w-full flex-1 overflow-y-auto p-5">
-      {chat.map((msg, index) => {
-        const pointsArray = Object.entries(msg.points);
-
-        return (
-          <div key={index}>
-            <div className="my-10">
-              <section className="flex gap-1 items-center flex-row-reverse">
-                <User className="text-gray-600" />
-                <p className="font-semibold text-xl">{authUser!.userName}</p>
-              </section>
-              <p className="mr-7 my-1 text-gray-600 text-right">{msg.query}</p>
-            </div>
-            <div>
-              <section className="flex gap-1 items-center mb-2">
-                <FileText className="text-gray-600" />
-                <p className="font-semibold text-xl">VerbiSense</p>
-              </section>
-              <p className="md:ml-7 ml-4 my-1 mt-4 font text-lg font-medium">
-                {msg.heading1}
-              </p>
-              <p className="md:ml-16 ml-7 my-1 text-gray-600 leading-relaxed">
-                {msg.key_takeaways}
-              </p>
-              {pointsArray.map(([key, values]) => (
-                <div key={key}>
-                  <h3 className="md:ml-7 ml-4 my-2">{key}</h3>
-                  <ul className="list-disc list-inside leading-loose">
-                    {values.map((value, index) => (
+      {chat.length > 0 ? (
+        chat.map((msg, index) => {
+          const pointsArray = Object.entries(msg.points);
+          return (
+            <div key={index}>
+              <div className="my-10">
+                <section className="flex gap-1 items-center flex-row-reverse">
+                  <User className="text-gray-600" />
+                  <p className="font-semibold text-xl">{authUser!.userName}</p>
+                </section>
+                <p className="mr-7 my-1 text-gray-600 text-right">
+                  {msg.query}
+                </p>
+              </div>
+              <div>
+                <section className="flex gap-1 items-center mb-2">
+                  <FileText className="text-gray-600" />
+                  <p className="font-semibold text-xl">VerbiSense</p>
+                </section>
+                <p className="md:ml-7 ml-4 my-1 mt-4 font text-lg font-medium">
+                  {msg.heading1}
+                </p>
+                <p className="md:ml-16 ml-7 my-1 text-gray-600 leading-relaxed">
+                  {msg.key_takeaways}
+                </p>
+                {pointsArray.map(([key, values]) => (
+                  <div key={key}>
+                    <h3 className="md:ml-7 ml-4 my-2">{key}</h3>
+                    <ul className="list-disc list-inside leading-loose">
+                      {values.map((value, index) => (
+                        <li
+                          className="md:ml-16 ml-7 break-words  text-gray-600"
+                          key={index}
+                        >
+                          {renderExampleWithLinks(value)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                {msg.example.length !== 0 &&
+                  msg.heading1.length !== 0 &&
+                  msg.heading2.length !== 0 &&
+                  pointsArray.length !== 0 && (
+                    <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
+                      Summary
+                    </p>
+                  )}
+                <p className="md:ml-16 ml-7 my-1 text-gray-600">
+                  {msg.summary}
+                </p>
+                {msg.example.length > 0 && (
+                  <div>
+                    <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
+                      Example
+                    </p>
+                    {msg.example.map((example, exampleIndex) => (
                       <li
-                        className="md:ml-16 ml-7 break-words  text-gray-600"
-                        key={index}
+                        key={exampleIndex}
+                        className="md:ml-16 ml-7 my-1 text-gray-600 leading-loose"
                       >
-                        {renderExampleWithLinks(value)}
+                        {renderExampleWithLinks(example)}
                       </li>
                     ))}
-                  </ul>
-                </div>
-              ))}
-              {msg.example.length !== 0 &&
-                msg.heading1.length !== 0 &&
-                msg.heading2.length !== 0 &&
-                pointsArray.length !== 0 && (
-                  <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
-                    Summary
-                  </p>
+                  </div>
                 )}
-              <p className="md:ml-16 ml-7 my-1 text-gray-600">{msg.summary}</p>
-              {msg.example.length > 0 && (
-                <div>
-                  <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
-                    Example
-                  </p>
-                  {msg.example.map((example, exampleIndex) => (
-                    <li
-                      key={exampleIndex}
-                      className="md:ml-16 ml-7 my-1 text-gray-600 leading-loose"
-                    >
-                      {renderExampleWithLinks(example)}
-                    </li>
-                  ))}
-                </div>
-              )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      ) : (
+        <div className="flex flex-col justify-center items-center h-full">
+          <p className=" text-[50px] md:text-[65px]">{welcomeMessage}</p>
+          <p>Ask me Anything!</p>
+        </div>
+      )}
       {chatLoading && (
         <div className="flex justify-center my-4">
           <div className="spinner"></div>
