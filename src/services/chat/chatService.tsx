@@ -53,7 +53,7 @@ export async function getHistory(): Promise<any[] | null> {
     const chats = await Promise.all(
       querySnapshot.docs
         .filter((doc) => doc.id !== formattedDate)
-        .slice(0, 34)
+        .slice(0, 4)
         .map(async (doc) => {
           const messagesRef = collection(
             db,
