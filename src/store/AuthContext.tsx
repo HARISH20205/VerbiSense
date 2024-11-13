@@ -40,7 +40,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       if (user) {
         setUser(user);
-        fetchUserData(user);
+        setTimeout(() => {
+          fetchUserData(user);
+        }, 1000);
       } else {
         setUser(null);
       }

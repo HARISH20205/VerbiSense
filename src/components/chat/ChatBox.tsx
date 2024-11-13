@@ -112,7 +112,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
                   <section className="flex gap-1 items-center flex-row-reverse">
                     <User className="text-gray-600" />
                     <p className="font-semibold text-xl">
-                      {authUser ? authUser.userName : "Uer"}
+                      {authUser ? authUser.userName : "User"}
                     </p>
                   </section>
                   <p className="mr-7 my-1 text-gray-600 text-right">
