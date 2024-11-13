@@ -164,7 +164,7 @@ export async function getChatData(
 
       const chatModel: ChatModel = {
         query: data.query || "",
-        heading1: data.heading1 || "",
+        heading1: data.heading1,
         heading2: data.heading2 || [],
         key_takeaways: data.key_takeaways || "",
         points: data.points || {},
@@ -214,7 +214,7 @@ export async function sendMessage(
         const data = await response.json();
         const chatData: ChatModel = {
           query: data.query,
-          heading1: data.response.heading1 || "",
+          heading1: data.response.heading1||null,
           heading2: data.response.heading2 || "",
           key_takeaways: data.response.key_takeaways || "",
           points: data.response.points || "",
@@ -238,13 +238,13 @@ export async function sendMessage(
       if (response) {
         const chatData: ChatModel = {
           query: query,
-          heading1: data.heading1,
-          heading2: data.heading2,
-          key_takeaways: data.key_takeaways,
-          points: data.points,
-          example: data.example,
-          summary: data.summary,
-          error: data.error,
+          heading1: data.heading1 || null,
+          heading2: data.heading2 || "",
+          key_takeaways: data.key_takeaways || "",
+          points: data.points || "",
+          example: data.example || "",
+          summary: data.summary || "",
+          error: data.error || "",
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {

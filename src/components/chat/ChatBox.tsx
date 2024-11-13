@@ -146,7 +146,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
                     </div>
                   ))}
                   {msg.example.length !== 0 &&
-                    msg.heading1.length !== 0 &&
+                   msg.heading1 && msg.heading1.length !== 0 &&
                     msg.heading2.length !== 0 &&
                     pointsArray.length !== 0 && (
                       <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
