@@ -10,4 +10,5 @@ export interface ChatModel {
   points: Points;
   example: string[];
   summary: string;
+  error?: string;
 }
