@@ -62,7 +62,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
 
   useEffect(() => {
     setChat(chatData);
-  }, [chatData]);
+  }, [chatData, authUser]);
 
   useEffect(() => {
     if (chat.length === 0) {
@@ -112,7 +112,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
                   <section className="flex gap-1 items-center flex-row-reverse">
                     <User className="text-gray-600" />
                     <p className="font-semibold text-xl">
-                      {authUser!.userName}
+                      {authUser ? authUser.userName : "User"}
                     </p>
                   </section>
                   <p className="mr-7 my-1 text-gray-600 text-right">
@@ -146,7 +146,8 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
                     </div>
                   ))}
                   {msg.example.length !== 0 &&
-                   msg.heading1 && msg.heading1.length !== 0 &&
+                    msg.heading1 &&
+                    msg.heading1.length !== 0 &&
                     msg.heading2.length !== 0 &&
                     pointsArray.length !== 0 && (
                       <p className="md:ml-7 ml-4 my-1 font text-lg leading-relaxed">
