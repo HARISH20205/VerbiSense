@@ -4,12 +4,14 @@ import { AuthUserModel } from "../../models/auth/AuthUserModel";
 import {
   AuthCredential,
   EmailAuthProvider,
+  GoogleAuthProvider,
   User,
   UserCredential,
   createUserWithEmailAndPassword,
   reauthenticateWithCredential,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updatePassword,
 } from "firebase/auth";
@@ -69,6 +71,23 @@ export async function login(
     );
     return userCrendential;
   } catch (e) {
+    return null;
+  }
+}
+
+export async function googleLogin(): Promise<UserCredential | null> {
+  try {
+    const provider = new GoogleAuthProvider();
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+    await sendEmailVerification(user);
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      userName: user.displayName,
+    });
+    return userCredential;
+  } catch (e) {
+    console.error(e);
     return null;
   }
 }

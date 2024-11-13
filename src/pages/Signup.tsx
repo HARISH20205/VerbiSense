@@ -2,10 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { useContext, useRef, useState } from "react";
 import { emailRegex } from "../constants/regex";
-import { signup } from "../services/auth/authService";
+import { googleLogin, signup } from "../services/auth/authService";
 import { themeColors } from "../resources/colors";
 import { showSnackBar } from "../utils/snackbar";
 import { SnackBarContext } from "../store/snackBarContext";
+import { Icons } from "../utils/icons";
 
 function Signup() {
   const [eyeState, setEyeState] = useState<boolean>(false);
@@ -64,9 +65,21 @@ function Signup() {
     });
   };
 
+  const handleGoogleLogin = async () => {
+    const response = await googleLogin();
+    if (response) {
+      showSnackBar({
+        dispatch,
+        message: "Login Successfull",
+        color: themeColors.primary,
+      });
+      navigate("/chat");
+    }
+  };
+
   return (
     <div>
-      <div className="flex flex-col justify-center items-center h-screen gap-10 max-md:w-[70%] md:w-[35%] mx-auto">
+      <div className="flex flex-col justify-center items-center h-screen gap-5 max-md:w-[70%] md:w-[35%] mx-auto">
         <div className="flex flex-col items-center gap-2">
           <FileText size={40} />
           <p className="text-gray-900 font-semibold lg:text-2xl text-lg text-center">
@@ -120,6 +133,18 @@ function Signup() {
           >
             {isLoading ? "Loading..." : "Sign up"}
           </button>
+          <div className="flex items-center justify-center w-full">
+            <div className="w-full h-[1px] bg-gray-300"></div>
+            <p className="text-gray-500 mx-2">OR</p>
+            <div className="w-full h-[1px] bg-gray-300"></div>
+          </div>
+          <div className="flex items-center justify-center">
+            <img
+              className="cursor-pointer"
+              onClick={handleGoogleLogin}
+              src={Icons.googleIcon}
+            />
+          </div>
         </div>
         <p className="text-gray-600">
           Already have an account?{" "}

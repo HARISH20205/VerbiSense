@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, FileText, Mail } from "lucide-react";
 import { useContext, useRef, useState } from "react";
-import { login } from "../services/auth/authService";
+import { googleLogin, login } from "../services/auth/authService";
 import { UserCredential } from "firebase/auth";
 import { themeColors } from "../resources/colors";
 import { showSnackBar } from "../utils/snackbar";
 import { SnackBarContext } from "../store/snackBarContext";
+import { Icons } from "../utils/icons";
 
 function Login() {
   const [eyeState, setEyeState] = useState<boolean>(false);
@@ -16,6 +17,18 @@ function Login() {
 
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleGoogleLogin = async () => {
+    const response = await googleLogin();
+    if (response) {
+      showSnackBar({
+        dispatch,
+        message: "Login Successfull",
+        color: themeColors.primary,
+      });
+      navigate("/chat");
+    }
+  };
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -51,7 +64,7 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-10 max-md:w-[70%] md:w-[35%] mx-auto">
+    <div className="flex flex-col items-center justify-center h-screen gap-5 max-md:w-[70%] md:w-[35%] mx-auto">
       <div className="flex flex-col items-center gap-3">
         <FileText size={40} />
         <p className="text-gray-900 font-semibold lg:text-2xl text-lg text-center">
@@ -102,6 +115,16 @@ function Login() {
           {isLoading ? "Loading..." : "Log in"}
         </button>
       </div>
+      <div className="flex items-center justify-center w-full">
+        <div className="w-full h-[1px] bg-gray-300"></div>
+        <p className="text-gray-500 mx-2">OR</p>
+        <div className="w-full h-[1px] bg-gray-300"></div>
+      </div>
+      <img
+        className="cursor-pointer"
+        onClick={handleGoogleLogin}
+        src={Icons.googleIcon}
+      />
       <div>
         <p className="text-gray-600">
           Don't have an account?{" "}
