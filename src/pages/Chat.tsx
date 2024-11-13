@@ -80,7 +80,7 @@ function Chat() {
       showSnackBar({
         color: themeColors.errorColor,
         dispatch: dispatch,
-        message: response.error,
+        message: "Failed to get the response.",
       });
       return;
     }
