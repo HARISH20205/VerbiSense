@@ -76,6 +76,14 @@ function Chat() {
       updatedFiles!,
       id
     );
+    if (response?.error) {
+      showSnackBar({
+        color: themeColors.errorColor,
+        dispatch: dispatch,
+        message: response.error,
+      });
+      return;
+    }
     if (response) {
       setChatData((pre) => [...pre, response]);
       setChatLoading(false);

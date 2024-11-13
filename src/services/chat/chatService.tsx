@@ -218,6 +218,7 @@ export async function sendMessage(
           points: data.response.points || "",
           example: data.response.example || "",
           summary: data.response.summary || "",
+          error: data.error,
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {
