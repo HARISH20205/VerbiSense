@@ -80,7 +80,6 @@ export async function googleLogin(): Promise<UserCredential | null> {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
-    await sendEmailVerification(user);
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       userName: user.displayName,
