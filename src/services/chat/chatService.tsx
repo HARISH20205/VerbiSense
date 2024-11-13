@@ -164,12 +164,13 @@ export async function getChatData(
 
       const chatModel: ChatModel = {
         query: data.query || "",
-        heading1: data.heading1 || "",
+        heading1: data.heading1,
         heading2: data.heading2 || [],
         key_takeaways: data.key_takeaways || "",
         points: data.points || {},
         example: data.example || [],
         summary: data.summary || "",
+        error: data.error || "",
       };
 
       return chatModel;
@@ -208,17 +209,18 @@ export async function sendMessage(
           userId: user.uid,
         }),
       });
+
       if (response.ok) {
         const data = await response.json();
         const chatData: ChatModel = {
           query: data.query,
-          heading1: data.response.heading1 || "",
+          heading1: data.response.heading1||null,
           heading2: data.response.heading2 || "",
           key_takeaways: data.response.key_takeaways || "",
           points: data.response.points || "",
           example: data.response.example || "",
           summary: data.response.summary || "",
-          error: data.error,
+          error: data.response.error || "",
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {
@@ -236,12 +238,13 @@ export async function sendMessage(
       if (response) {
         const chatData: ChatModel = {
           query: query,
-          heading1: data.heading1,
-          heading2: data.heading2,
-          key_takeaways: data.key_takeaways,
-          points: data.points,
-          example: data.example,
-          summary: data.summary,
+          heading1: data.heading1 || null,
+          heading2: data.heading2 || "",
+          key_takeaways: data.key_takeaways || "",
+          points: data.points || "",
+          example: data.example || "",
+          summary: data.summary || "",
+          error: data.error || "",
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {

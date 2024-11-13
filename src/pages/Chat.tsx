@@ -76,7 +76,7 @@ function Chat() {
       updatedFiles!,
       id
     );
-    if (response?.error) {
+    if (response?.error?.length ?? 0 > 0) {
       showSnackBar({
         color: themeColors.errorColor,
         dispatch: dispatch,
