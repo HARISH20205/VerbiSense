@@ -170,6 +170,7 @@ export async function getChatData(
         points: data.points || {},
         example: data.example || [],
         summary: data.summary || "",
+        error: data.error || "",
       };
 
       return chatModel;
@@ -208,6 +209,7 @@ export async function sendMessage(
           userId: user.uid,
         }),
       });
+
       if (response.ok) {
         const data = await response.json();
         const chatData: ChatModel = {
@@ -218,7 +220,7 @@ export async function sendMessage(
           points: data.response.points || "",
           example: data.response.example || "",
           summary: data.response.summary || "",
-          error: data.error,
+          error: data.response.error || "",
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {
@@ -242,6 +244,7 @@ export async function sendMessage(
           points: data.points,
           example: data.example,
           summary: data.summary,
+          error: data.error,
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {
