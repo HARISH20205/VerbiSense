@@ -197,7 +197,7 @@ export async function sendMessage(
     }
 
     if (files.length > 0) {
-      const response = await fetch("http://localhost:5000/chat", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -212,12 +212,12 @@ export async function sendMessage(
         const data = await response.json();
         const chatData: ChatModel = {
           query: data.query,
-          heading1: data.response.heading1,
-          heading2: data.response.heading2,
-          key_takeaways: data.response.key_takeaways,
-          points: data.response.points,
-          example: data.response.example,
-          summary: data.response.summary,
+          heading1: data.response.heading1 || "",
+          heading2: data.response.heading2 || "",
+          key_takeaways: data.response.key_takeaways || "",
+          points: data.response.points || "",
+          example: data.response.example || "",
+          summary: data.response.summary || "",
         };
         const savedInFireStore = await saveInFireStore(chatData, date);
         if (savedInFireStore) {

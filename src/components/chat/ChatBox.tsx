@@ -81,7 +81,7 @@ export default function ChatBox({ chatData, chatLoading }: ChatBoxProps) {
     const animateScroll = (target: number) => {
       const start = chatBoxRef.current?.scrollTop || 0;
       const distance = target - start;
-      const duration = 2000;
+      const duration = 3000;
       let startTime: number | null = null;
 
       const animation = (currentTime: number) => {
