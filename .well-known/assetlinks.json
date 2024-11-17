@@ -1,0 +1,13 @@
+[
+    {
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.example.verbisense",
+        "sha256_cert_fingerprints": [
+          "E0:19:48:13:99:87:EF:48:CA:DD:FB:3B:39:85:A8:B6:F7:FE:CE:E5:21:BB:63:84:8B:FA:86:B0:03:47:C2:17"
+        ]
+      }
+    }
+  ]
+  
