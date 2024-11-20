@@ -191,7 +191,6 @@ export async function sendMessage(
   try {
     const user = auth.currentUser;
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    console.log(apiKey);
 
     const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -235,11 +234,8 @@ export async function sendMessage(
       const result = await model.generateContent(geminiPrompt(query));
       const response = result.response;
       const responseText = response.text();
-      console.log(responseText);
       const modifiedText = removeMarkdownCodeBlock(responseText).trim();
-      console.log(modifiedText);
       const data = JSON.parse(modifiedText.replace("```", ""));
-      console.log(data);
       if (response) {
         const chatData: ChatModel = {
           query: query,
